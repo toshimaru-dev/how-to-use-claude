@@ -1,0 +1,13 @@
+# Claude Code local-only settings (machine-specific permission grants)
+.claude/settings.local.json
+
+# Skill-local virtual environments (bootstrapped on first use, not committed)
+.claude/skills/**/.venv/
+**/__pycache__/
+*.pyc
+
+# Generated release assets (this harness's own output, not source)
+release-assets/
+
+# OS
+.DS_Store
