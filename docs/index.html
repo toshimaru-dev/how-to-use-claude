@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code でスマホ・ウェブアプリ開発を始める（Windows 版）</title>
+  <style>
+    /* ── Design tokens ── */
+    :root {
+      --bg: #0f1117;
+      --bg-card: #1a1d27;
+      --bg-code: #12141e;
+      --border: #2a2d3e;
+      --accent: #8b5cf6;
+      --accent-2: #06b6d4;
+      --accent-3: #10b981;
+      --text: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-code: #a5f3fc;
+      --badge-bg: rgba(139, 92, 246, 0.15);
+      --sidebar-w: 270px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Yu Gothic UI',
+                   'Hiragino Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+
+    /* ── Sidebar ── */
+    #sidebar {
+      position: fixed; top: 0; left: 0;
+      width: var(--sidebar-w); height: 100vh;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      display: flex; flex-direction: column;
+      z-index: 100;
+    }
+    .sidebar-header { padding: 22px 18px 14px; border-bottom: 1px solid var(--border); }
+    .sidebar-header .logo { font-size: 13px; font-weight: 800; color: var(--accent); letter-spacing: .08em; text-transform: uppercase; }
+    .sidebar-header p { font-size: 11.5px; color: var(--text-muted); margin-top: 3px; }
+    #sidebar nav { padding: 12px 10px; flex: 1; }
+    #sidebar nav a {
+      display: block; padding: 5px 10px; border-radius: 6px;
+      color: var(--text-muted); text-decoration: none; font-size: 12.5px;
+      transition: all .12s; line-height: 1.4;
+    }
+    #sidebar nav a:hover, #sidebar nav a.active { background: var(--badge-bg); color: var(--text); }
+    .nav-group {
+      font-size: 10px; font-weight: 800; color: var(--text-muted);
+      letter-spacing: .1em; text-transform: uppercase;
+      padding: 13px 10px 4px;
+    }
+    .nav-group:first-child { padding-top: 0; }
+
+    /* ── Main ── */
+    #main { margin-left: var(--sidebar-w); max-width: 840px; padding: 56px 48px 120px; }
+
+    /* ── Hero ── */
+    .hero { padding: 40px 0 48px; border-bottom: 1px solid var(--border); margin-bottom: 48px; }
+    .hero .eyebrow { font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+    .hero h1 { font-size: 34px; font-weight: 800; line-height: 1.2; letter-spacing: -.02em; background: linear-gradient(135deg, #fff 0%, #94a3b8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 16px; }
+    .hero p { font-size: 15.5px; color: var(--text-muted); max-width: 560px; line-height: 1.8; }
+    .hero .badges { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 22px; }
+    .badge { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 600; }
+    .badge-purple { background: rgba(139,92,246,.15); color: #c4b5fd; border: 1px solid rgba(139,92,246,.3); }
+    .badge-cyan   { background: rgba(6,182,212,.12);  color: #67e8f9;  border: 1px solid rgba(6,182,212,.3); }
+    .badge-green  { background: rgba(16,185,129,.12); color: #6ee7b7;  border: 1px solid rgba(16,185,129,.3); }
+    .badge-orange { background: rgba(249,115,22,.12); color: #fdba74;  border: 1px solid rgba(249,115,22,.3); }
+
+    /* ── Sections ── */
+    section { margin-bottom: 64px; scroll-margin-top: 28px; }
+    section + section { border-top: 1px solid var(--border); padding-top: 48px; }
+    h2 { font-size: 21px; font-weight: 700; letter-spacing: -.01em; margin-bottom: 16px; color: #fff; display: flex; align-items: center; gap: 10px; }
+    h2 .num { display: inline-flex; align-items: center; justify-content: center; width: 27px; height: 27px; background: var(--accent); border-radius: 7px; font-size: 12.5px; font-weight: 800; color: #fff; flex-shrink: 0; }
+    h3 { font-size: 15.5px; font-weight: 700; margin: 24px 0 8px; color: #e2e8f0; }
+    p { margin-bottom: 12px; color: var(--text-muted); font-size: 14px; }
+    p:last-child { margin-bottom: 0; }
+    strong { color: var(--text); }
+    ul, ol { padding-left: 18px; color: var(--text-muted); font-size: 13.5px; }
+    li { margin-bottom: 5px; }
+
+    /* ── Inline code ── */
+    p code, li code, td code {
+      background: var(--bg-code); padding: 2px 6px; border-radius: 4px;
+      border: 1px solid var(--border); font-size: 12px; color: var(--text-code);
+      font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+    }
+
+    /* ── Copy-able code block ── */
+    .codeblock {
+      background: var(--bg-code); border: 1px solid var(--border);
+      border-radius: 10px; padding: 15px 17px; overflow-x: auto;
+      margin: 10px 0; position: relative;
+    }
+    .codeblock pre { margin: 0; }
+    .codeblock code {
+      font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace;
+      font-size: 12.5px; color: var(--text-code); line-height: 1.65;
+      display: block;
+    }
+    .copy-btn {
+      position: absolute; top: 8px; right: 8px;
+      background: var(--border); border: none; border-radius: 5px;
+      color: var(--text-muted); font-size: 10.5px; padding: 3px 7px;
+      cursor: pointer; transition: all .15s; font-family: inherit;
+    }
+    .copy-btn:hover { background: var(--accent); color: #fff; }
+    .copy-btn.copied { background: var(--accent-3); color: #fff; }
+    .cb-label { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; display: block; }
+    .cm { color: #4b5580; }
+
+    /* ── Callout ── */
+    .callout { display: flex; gap: 12px; padding: 13px 15px; border-radius: 9px; margin: 12px 0; }
+    .callout-info { background: rgba(6,182,212,.07); border: 1px solid rgba(6,182,212,.22); }
+    .callout-warn { background: rgba(245,158,11,.07); border: 1px solid rgba(245,158,11,.22); }
+    .callout-tip  { background: rgba(16,185,129,.07); border: 1px solid rgba(16,185,129,.22); }
+    .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .callout p { font-size: 13px; color: var(--text-muted); margin-bottom: 0; }
+
+    /* ── Steps ── */
+    .steps { display: flex; flex-direction: column; gap: 18px; margin-top: 8px; }
+    .step { display: flex; gap: 13px; }
+    .step-num { flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--accent); color: var(--accent); font-size: 12.5px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+    .step-body { flex: 1; padding-top: 2px; }
+    .step-body h4 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+    .step-body p { font-size: 13px; margin-bottom: 6px; }
+
+    /* ── Tool grid ── */
+    .tool-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; margin: 12px 0; }
+    .tool-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 9px; padding: 14px; }
+    .tool-name { font-size: 13.5px; font-weight: 700; color: var(--text); margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+    .tool-card p { font-size: 12px; color: var(--text-muted); }
+    .req  { font-size: 9.5px; font-weight: 700; padding: 2px 5px; border-radius: 8px; background: var(--badge-bg); color: #c4b5fd; }
+    .opt  { font-size: 9.5px; font-weight: 700; padding: 2px 5px; border-radius: 8px; background: rgba(100,116,139,.15); color: #94a3b8; }
+
+    /* ════════════════════════════════════════
+       MOCK COMPONENTS (screenshot replacements)
+    ════════════════════════════════════════ */
+
+    /* Terminal window */
+    .term-window {
+      background: #0c0c0c; border-radius: 10px; overflow: hidden;
+      margin: 14px 0; border: 1px solid #2a2a2a;
+      box-shadow: 0 12px 40px rgba(0,0,0,.6);
+    }
+    .term-bar {
+      background: #2a2a2a; padding: 8px 13px;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .term-btn { width: 11px; height: 11px; border-radius: 50%; }
+    .tc { background: #ff5f57; } .tm { background: #ffbd2e; } .tx { background: #28ca41; }
+    .term-title { flex: 1; text-align: center; font-size: 11.5px; color: #666; font-family: 'Segoe UI', sans-serif; }
+    .term-body { padding: 16px 18px; font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace; font-size: 12.5px; line-height: 1.7; }
+    .ps1  { color: #5c9cf5; } /* PS prompt */
+    .path { color: #4ec9b0; } /* path */
+    .cmd  { color: #dcdcaa; } /* command */
+    .arg  { color: #9cdcfe; } /* argument */
+    .out  { color: #c8c8c8; } /* output text */
+    .ok   { color: #6a9955; } /* success green */
+    .err  { color: #f48771; } /* error red */
+    .dim  { color: #555; }    /* faded */
+    .hl   { color: #b5cea8; } /* number highlight */
+    .yn   { color: #c586c0; } /* prompt choice */
+    .blk  { display: block; }
+    .term-body .gap { display: block; height: 6px; }
+    .cursor { display: inline-block; width: 8px; height: 14px; background: #c8c8c8; vertical-align: text-bottom; animation: blink 1s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* VS Code window */
+    .vsc-window {
+      background: #1e1e1e; border-radius: 10px; overflow: hidden;
+      margin: 14px 0; border: 1px solid #3c3c3c;
+      box-shadow: 0 12px 40px rgba(0,0,0,.6);
+    }
+    .vsc-titlebar {
+      background: #3c3c3c; padding: 7px 14px;
+      display: flex; align-items: center; gap: 8px;
+      font-size: 11.5px; color: #888;
+    }
+    .vsc-title-btns { display: flex; gap: 6px; }
+    .vsc-title-btns span { width: 11px; height: 11px; border-radius: 50%; }
+    .vsc-title { flex: 1; text-align: center; }
+    .vsc-tabs { display: flex; background: #252526; border-bottom: 1px solid #1e1e1e; }
+    .vsc-tab { padding: 5px 14px; font-size: 11.5px; color: #888; border-right: 1px solid #1e1e1e; cursor: default; }
+    .vsc-tab.active { background: #1e1e1e; color: #ddd; border-top: 1px solid var(--accent); }
+    .vsc-body { display: flex; height: 320px; }
+    .vsc-activity { width: 46px; background: #333; display: flex; flex-direction: column; align-items: center; padding: 8px 0; gap: 16px; }
+    .vsc-icon { width: 24px; height: 24px; opacity: .5; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .vsc-icon.active-icon { opacity: 1; }
+    .vsc-sidebar { width: 180px; background: #252526; border-right: 1px solid #1e1e1e; padding: 8px 0; overflow: hidden; }
+    .vsc-tree-title { font-size: 10.5px; font-weight: 700; color: #bbb; padding: 4px 12px 6px; letter-spacing: .06em; text-transform: uppercase; }
+    .vsc-tree-item { font-size: 12px; color: #ccc; padding: 3px 12px 3px 20px; display: flex; align-items: center; gap: 6px; cursor: default; }
+    .vsc-tree-item:hover { background: #2a2d2e; }
+    .vsc-tree-item.selected { background: #094771; }
+    .vsc-tree-folder { color: #e8ab70; }
+    .vsc-tree-file { color: #c8c8c8; }
+    .vsc-tree-file.ts { color: #519aba; }
+    .vsc-tree-file.md { color: #e37933; }
+    .vsc-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .vsc-editor { flex: 1; padding: 12px 16px; font-family: 'Cascadia Code', Consolas, monospace; font-size: 12px; line-height: 1.7; color: #d4d4d4; overflow: hidden; }
+    .vsc-terminal-panel { height: 130px; background: #1e1e1e; border-top: 1px solid #3c3c3c; }
+    .vsc-panel-tabs { display: flex; background: #252526; border-bottom: 1px solid #1e1e1e; padding: 0 8px; }
+    .vsc-panel-tab { font-size: 11.5px; padding: 4px 10px; color: #888; cursor: default; }
+    .vsc-panel-tab.active { color: #ddd; border-bottom: 1px solid var(--accent); }
+    .vsc-panel-body { padding: 8px 14px; font-family: 'Cascadia Code', Consolas, monospace; font-size: 12px; line-height: 1.65; }
+
+    /* Claude Code chat mock */
+    .claude-window {
+      background: #0f1117; border-radius: 10px; overflow: hidden;
+      margin: 14px 0; border: 1px solid var(--border);
+      box-shadow: 0 12px 40px rgba(0,0,0,.6);
+    }
+    .claude-header {
+      background: #1a1d27; padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .claude-logo { width: 24px; height: 24px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+    .claude-header-text { font-size: 13px; font-weight: 700; color: var(--text); }
+    .claude-header-sub { font-size: 11px; color: var(--text-muted); }
+    .claude-body { padding: 20px 20px; display: flex; flex-direction: column; gap: 14px; }
+    .claude-msg { display: flex; gap: 10px; }
+    .claude-msg.user { justify-content: flex-end; }
+    .claude-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+    .av-claude { background: var(--accent); }
+    .av-user { background: #334155; }
+    .claude-bubble {
+      max-width: 78%; padding: 10px 14px; border-radius: 12px;
+      font-size: 13px; line-height: 1.6; color: var(--text-muted);
+    }
+    .bubble-claude { background: #1a1d27; border: 1px solid var(--border); border-radius: 4px 12px 12px 12px; }
+    .bubble-user   { background: rgba(139,92,246,.2); border: 1px solid rgba(139,92,246,.3); border-radius: 12px 4px 12px 12px; color: #d8b4fe; }
+    .claude-bubble strong { color: var(--text); }
+    .phase-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 700; padding: 2px 7px; border-radius: 10px; background: var(--badge-bg); color: #c4b5fd; margin-bottom: 5px; }
+    .claude-thinking { display: flex; gap: 4px; padding: 4px 0; }
+    .claude-thinking span { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; animation: bounce .8s infinite; }
+    .claude-thinking span:nth-child(2) { animation-delay: .15s; }
+    .claude-thinking span:nth-child(3) { animation-delay: .3s; }
+    @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+
+    /* MCP list mockup */
+    .mcp-list { background: #0c0c0c; border-radius: 10px; padding: 16px 18px; font-family: 'Cascadia Code', Consolas, monospace; font-size: 12.5px; line-height: 1.8; border: 1px solid #2a2a2a; margin: 14px 0; }
+    .mcp-connected { color: #6a9955; }
+    .mcp-name { color: #9cdcfe; font-weight: 700; }
+    .mcp-detail { color: #888; }
+
+    /* GitHub browser mockup */
+    .browser-window {
+      background: #fff; border-radius: 10px; overflow: hidden;
+      margin: 14px 0; border: 1px solid #ddd;
+      box-shadow: 0 12px 40px rgba(0,0,0,.4);
+    }
+    .browser-bar { background: #f5f5f5; padding: 8px 12px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #ddd; }
+    .browser-btns { display: flex; gap: 6px; }
+    .browser-btns span { width: 11px; height: 11px; border-radius: 50%; }
+    .bb-c { background: #ff5f57; } .bb-m { background: #ffbd2e; } .bb-x { background: #28ca41; }
+    .browser-url { flex: 1; background: #fff; border: 1px solid #ddd; border-radius: 20px; padding: 4px 12px; font-size: 12px; color: #333; font-family: 'Segoe UI', sans-serif; }
+    .browser-body { padding: 28px 32px; background: #fff; font-family: -apple-system, 'Segoe UI', sans-serif; }
+    .gh-logo { font-size: 28px; margin-bottom: 16px; display: block; }
+    .gh-h2 { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 8px; }
+    .gh-sub { font-size: 13.5px; color: #555; margin-bottom: 20px; }
+    .gh-code-box { background: #f0f0f0; border: 1px solid #ddd; border-radius: 6px; padding: 14px 20px; text-align: center; }
+    .gh-code-label { font-size: 12px; color: #666; margin-bottom: 6px; }
+    .gh-code { font-size: 28px; font-weight: 800; letter-spacing: 4px; color: #1a1a1a; font-family: 'Cascadia Code', Consolas, monospace; }
+    .gh-btn { display: block; width: 100%; padding: 10px; background: #238636; color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; margin-top: 14px; text-align: center; }
+
+    /* Flow diagram */
+    .flow { display: flex; flex-direction: column; margin-top: 16px; }
+    .flow-item { display: flex; gap: 0; }
+    .flow-conn { display: flex; flex-direction: column; align-items: center; width: 36px; flex-shrink: 0; }
+    .flow-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+    .flow-line { width: 2px; flex: 1; background: var(--border); margin-top: 2px; }
+    .flow-item:last-child .flow-line { display: none; }
+    .flow-body { padding: 0 0 22px 12px; }
+    .flow-phase { font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: 2px; }
+    .flow-body h4 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .flow-body p { font-size: 13px; color: var(--text-muted); margin-bottom: 0; }
+    .who { display: inline-flex; align-items: center; font-size: 10.5px; font-weight: 600; padding: 2px 7px; border-radius: 10px; margin-top: 4px; }
+    .who-cc { background: var(--badge-bg); color: #c4b5fd; }
+    .who-cx { background: rgba(6,182,212,.12); color: #67e8f9; }
+
+    /* Skill card */
+    .skill-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 11px; padding: 20px; margin-bottom: 12px; }
+    .skill-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
+    .skill-icon { width: 40px; height: 40px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 19px; flex-shrink: 0; }
+    .si-p { background: var(--badge-bg); } .si-c { background: rgba(6,182,212,.12); }
+    .skill-card h3 { margin: 0 0 3px; font-size: 14.5px; }
+    .skill-trigger { font-size: 11.5px; color: var(--text-muted); margin-bottom: 0 !important; }
+    .skill-card ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+    .skill-card li { display: flex; gap: 7px; font-size: 13px; color: var(--text-muted); }
+    .skill-card li::before { content: "→"; color: var(--accent); font-weight: 700; flex-shrink: 0; }
+
+    /* Tables */
+    .data-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 10px 0; }
+    .data-table th { text-align: left; padding: 8px 12px; background: var(--bg-code); color: var(--text-muted); font-size: 10.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+    .data-table th:first-child { border-radius: 7px 0 0 0; } .data-table th:last-child { border-radius: 0 7px 0 0; }
+    .data-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); color: var(--text-muted); vertical-align: top; }
+    .data-table td:first-child { color: var(--text); font-weight: 600; }
+    .data-table tr:last-child td { border-bottom: none; }
+
+    footer { margin-top: 56px; padding-top: 24px; border-top: 1px solid var(--border); text-align: center; font-size: 12.5px; color: var(--text-muted); }
+
+    @media (max-width: 768px) {
+      #sidebar { display: none; }
+      #main { margin-left: 0; padding: 28px 18px 72px; }
+      .hero h1 { font-size: 24px; }
+      .tool-grid { grid-template-columns: 1fr 1fr; }
+      .vsc-sidebar { display: none; }
+    }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+  </style>
+</head>
+<body>
+
+<!-- ── Sidebar ── -->
+<aside id="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">Claude Code</div>
+    <p>Windows 向け スターターガイド</p>
+  </div>
+  <nav>
+    <div class="nav-group">はじめに</div>
+    <a href="#overview">このガイドについて</a>
+    <a href="#tools">必要なツール一覧</a>
+
+    <div class="nav-group">環境構築</div>
+    <a href="#step-winget">Step 1　winget を確認</a>
+    <a href="#step-tools">Step 2　開発ツール一括インストール</a>
+    <a href="#step-vscode">Step 3　VS Code のセットアップ</a>
+    <a href="#step-github">Step 4　GitHub のセットアップ</a>
+    <a href="#step-claude">Step 5　Claude Code のインストール</a>
+    <a href="#step-codex">Step 6　Codex CLI のセットアップ</a>
+    <a href="#step-mcp">Step 7　MCP サーバー登録</a>
+    <a href="#step-playwright">Step 8　Playwright（任意）</a>
+
+    <div class="nav-group">開発ワークフロー</div>
+    <a href="#workflow">全体フロー</a>
+    <a href="#skills">スキル一覧</a>
+    <a href="#usage">実際の使い方</a>
+
+    <div class="nav-group">リファレンス</div>
+    <a href="#tips">Tips &amp; ベストプラクティス</a>
+    <a href="#trouble">トラブルシューティング</a>
+  </nav>
+</aside>
+
+<!-- ── Main ── -->
+<main id="main">
+
+  <div class="hero">
+    <div class="eyebrow">Windows Starter Guide</div>
+    <h1>Claude Code で<br>スマホ・ウェブアプリ開発を<br>ゼロから始める</h1>
+    <p>開発環境が何も入っていない Windows PC からスタート。順番どおりに進めるだけでセットアップ完了。</p>
+    <div class="badges">
+      <span class="badge badge-orange">Windows 10 / 11</span>
+      <span class="badge badge-purple">Claude Code</span>
+      <span class="badge badge-cyan">Codex CLI</span>
+      <span class="badge badge-green">ゼロから OK</span>
+    </div>
+  </div>
+
+  <!-- ── 0. Overview ── -->
+  <section id="overview">
+    <h2><span class="num">0</span> このガイドについて</h2>
+    <p>
+      このリポジトリは <strong>Claude Code</strong>（Anthropic の AI 開発支援ツール）と
+      <strong>Codex CLI</strong>（OpenAI の CLI エージェント）を組み合わせた
+      スマホ・ウェブアプリ開発の <strong>Windows 向けスターターキット</strong> です。
+    </p>
+    <p>
+      <strong>Node.js・Git・VS Code・GitHub CLI も未インストールの状態</strong>から、
+      すべての手順をこのガイドでカバーします。
+    </p>
+
+    <div class="callout callout-tip">
+      <span class="callout-icon">✅</span>
+      <p>
+        <strong>PowerShell（管理者）</strong>を使って進めます。
+        スタートメニューで「PowerShell」と検索し、右クリック →「管理者として実行」で開いてください。
+      </p>
+    </div>
+
+    <!-- Terminal mockup: PowerShell starting -->
+    <div class="term-window">
+      <div class="term-bar">
+        <span class="term-btn tc"></span><span class="term-btn tm"></span><span class="term-btn tx"></span>
+        <span class="term-title">Windows PowerShell（管理者）</span>
+      </div>
+      <div class="term-body">
+        <span class="blk dim">Windows PowerShell</span>
+        <span class="blk dim">Copyright (C) Microsoft Corporation. All rights reserved.</span>
+        <span class="gap"></span>
+        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cursor"></span></span>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <p>コマンド内の <span style="color:#4b5580;font-family:monospace;"># コメント</span> で始まる行は説明文です。まとめてコピーしても動作に影響はありません。</p>
+    </div>
+  </section>
+
+  <!-- ── 1. Tools ── -->
+  <section id="tools">
+    <h2><span class="num">1</span> 必要なツール一覧</h2>
+    <p>この手順でインストールするツールとアカウントの全体像です。</p>
+    <div class="tool-grid">
+      <div class="tool-card"><div class="tool-name">Node.js <span class="req">必須</span></div><p>Claude Code・Codex CLI の実行環境</p></div>
+      <div class="tool-card"><div class="tool-name">Git <span class="req">必須</span></div><p>バージョン管理ツール</p></div>
+      <div class="tool-card"><div class="tool-name">VS Code <span class="req">必須</span></div><p>コードエディタ</p></div>
+      <div class="tool-card"><div class="tool-name">GitHub CLI <span class="req">必須</span></div><p><code>gh</code> コマンド。GitHub 操作に使用</p></div>
+      <div class="tool-card"><div class="tool-name">Python <span class="opt">任意</span></div><p>バナー画像生成のみ使用</p></div>
+      <div class="tool-card"><div class="tool-name">Claude アカウント <span class="req">必須</span></div><p>Pro / Max プラン（claude.ai）</p></div>
+      <div class="tool-card"><div class="tool-name">ChatGPT アカウント <span class="req">必須</span></div><p>Codex CLI 認証用。無料 OK</p></div>
+      <div class="tool-card"><div class="tool-name">GitHub アカウント <span class="req">必須</span></div><p>コード管理・テンプレート作成</p></div>
+    </div>
+  </section>
+
+  <!-- ── Step 1: winget ── -->
+  <section id="step-winget">
+    <h2><span class="num">2</span> Step 1 　winget を確認する</h2>
+    <p>
+      Windows には <strong>winget</strong>（Windows Package Manager）という標準ツールがあり、
+      コマンド一発でアプリをインストールできます。まず使えるか確認します。
+    </p>
+
+    <span class="cb-label">PowerShell（管理者）</span>
+    <div class="codeblock"><pre><code>winget --version</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+
+    <p>実行するとこのような結果が返ります。</p>
+
+    <!-- Terminal: winget --version result -->
+    <div class="term-window">
+      <div class="term-bar">
+        <span class="term-btn tc"></span><span class="term-btn tm"></span><span class="term-btn tx"></span>
+        <span class="term-title">Windows PowerShell（管理者）</span>
+      </div>
+      <div class="term-body">
+        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">winget</span> <span class="arg">--version</span></span>
+        <span class="blk ok">v1.8.1911</span>
+        <span class="gap"></span>
+        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cursor"></span></span>
+      </div>
+    </div>
+
+    <p>バージョン番号（<code>v1.x.xxxx</code>）が表示されれば OK です。</p>
+
+    <div class="callout callout-warn">
+      <span class="callout-icon">⚠️</span>
+      <p><strong>「コマンドが見つからない」と表示された場合</strong>：Microsoft Store で「アプリ インストーラー」を検索して更新するか、Windows Update を実行してから再試行してください。</p>
+    </div>
+  </section>
+
+  <!-- ── Step 2: Tools install ── -->
+  <section id="step-tools">
+    <h2><span class="num">3</span> Step 2 　開発ツールを一括インストールする</h2>
+    <p>以下のコマンドをまとめてコピー＆ペーストして実行します。インストール済みのものは自動的にスキップされます。</p>
+
+    <span class="cb-label">PowerShell（管理者）</span>
+    <div class="codeblock"><pre><code><span class="cm"># Node.js LTS</span>
+winget install -e --id OpenJS.NodeJS.LTS
+
+<span class="cm"># Git</span>
+winget install -e --id Git.Git
+
+<span class="cm"># GitHub CLI（gh コマンド）</span>
+winget install -e --id GitHub.cli
+
+<span class="cm"># VS Code</span>
+winget install -e --id Microsoft.VisualStudioCode
+
+<span class="cm"># Python（バナー生成が不要なら省略可）</span>
+winget install -e --id Python.Python.3.12</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+
+    <!-- Terminal: winget install progress -->
+    <div class="term-window">
+      <div class="term-bar">
+        <span class="term-btn tc"></span><span class="term-btn tm"></span><span class="term-btn tx"></span>
+        <span class="term-title">Windows PowerShell（管理者）— winget 実行中</span>
+      </div>
+      <div class="term-body">
+        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">winget</span> <span class="arg">install -e --id OpenJS.NodeJS.LTS</span></span>
+        <span class="blk out">見つかりました Node.js LTS [OpenJS.NodeJS.LTS] バージョン 20.18.1</span>
+        <span class="blk out">このアプリケーションのライセンスはそのソース条項に従い付与されます。</span>
+        <span class="blk out">ダウンロード中 https://nodejs.org/dist/v20.18.1/node-v20.18.1-x64.msi</span>
+        <span class="blk"><span class="ok">  ████████████████████</span> <span class="hl">100%</span></span>
+        <span class="blk ok">インストールが完了しました。</span>
+        <span class="gap"></span>
+        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">winget</span> <span class="arg">install -e --id Git.Git</span></span>
+        <span class="blk out">見つかりました Git [Git.Git] バージョン 2.47.1</span>
+        <span class="blk"><span class="ok">  ████████████████████</span> <span class="hl">100%</span></span>
+        <span class="blk ok">インストールが完了しました。</span>
+      </div>
+    </div>
+
+    <div class="callout callout-warn">
+      <span class="callout-icon">⚠️</span>
+      <p><strong>インストール後は必ず PowerShell を閉じて開き直してください。</strong>新しくインストールしたコマンドは、再起動しないと認識されません。</p>
+    </div>
+
+    <h3>インストール確認</h3>
+    <p>PowerShell を開き直してから以下を実行します。</p>
+
+    <div class="codeblock"><pre><code>node --version
+npm --version
+git --version
+gh --version
+code --version</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+
+    <!-- Terminal: version check -->
+    <div class="term-window">
+      <div class="term-bar">
+        <span class="term-btn tc"></span><span class="term-btn tm"></span><span class="term-btn tx"></span>
+        <span class="term-title">Windows PowerShell（管理者）— バージョン確認</span>
+      </div>
+      <div class="term-body">
+        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">node</span> <span class="arg">--version</span></span>
+        <span class="blk ok">v20.18.1</span>
+        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">npm</span> <span class="arg">--version</span></span>
+        <span class="blk ok">10.8.2</span>
+        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">git</span> <span class="arg">--version</span></span>
+        <span class="blk ok">git version 2.47.1.windows.1</span>
+        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">gh</span> <span class="arg">--version</span></span>
+        <span class="blk ok">gh version 2.62.0 (2024-11-14)</span>
+        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">code</span> <span class="arg">--version</span></span>
+        <span class="blk ok">1.95.3</span>
+      </div>
+    </div>
+
+    <p>すべてにバージョン番号が表示されれば OK です。</p>
+  </section>
+
+  <!-- ── Step 3: VS Code ── -->
+  <section id="step-vscode">
+    <h2><span class="num">4</span> Step 3 　VS Code をセットアップする</h2>
+    <p>VS Code はコードを読み書きするメインのエディタです。ターミナルも内蔵しているので、Claude Code もここから起動します。</p>
+
+    <!-- VS Code window mockup -->
+    <div class="vsc-window">
+      <div class="vsc-titlebar">
+        <div class="vsc-title-btns">
+          <span style="background:#ff5f57"></span>
+          <span style="background:#ffbd2e"></span>
+          <span style="background:#28ca41"></span>
+        </div>
+        <span class="vsc-title">Visual Studio Code</span>
+      </div>
+      <div class="vsc-tabs">
+        <div class="vsc-tab active">CLAUDE.md</div>
+        <div class="vsc-tab">README.md</div>
+        <div class="vsc-tab">package.json</div>
+      </div>
+      <div class="vsc-body">
+        <div class="vsc-activity">
+          <div class="vsc-icon active-icon">📁</div>
+          <div class="vsc-icon">🔍</div>
+          <div class="vsc-icon">🧩</div>
+          <div class="vsc-icon">🐙</div>
+        </div>
+        <div class="vsc-sidebar">
+          <div class="vsc-tree-title">エクスプローラー</div>
+          <div class="vsc-tree-item"><span class="vsc-tree-folder">▾</span> MY-APP</div>
+          <div class="vsc-tree-item" style="padding-left:28px"><span class="vsc-tree-folder">▾</span> .claude</div>
+          <div class="vsc-tree-item" style="padding-left:40px"><span class="vsc-tree-folder">▸</span> skills</div>
+          <div class="vsc-tree-item" style="padding-left:28px"><span class="vsc-tree-folder">▾</span> docs</div>
+          <div class="vsc-tree-item selected" style="padding-left:40px"><span class="vsc-tree-file md">📄</span> index.html</div>
+          <div class="vsc-tree-item" style="padding-left:28px"><span class="vsc-tree-file md">📄</span> CLAUDE.md</div>
+          <div class="vsc-tree-item" style="padding-left:28px"><span class="vsc-tree-file md">📄</span> README.md</div>
+          <div class="vsc-tree-item" style="padding-left:28px"><span class="vsc-tree-file ts">📄</span> package.json</div>
+        </div>
+        <div class="vsc-main">
+          <div class="vsc-editor" style="color:#c8c8c8;font-size:12px;">
+            <span style="color:#608b4e;"># CLAUDE.md</span><br>
+            <span style="color:#c8c8c8;"></span><br>
+            <span style="color:#608b4e;">## このリポジトリについて</span><br>
+            <span style="color:#9cdcfe;">phoneapp-dev-harness</span> <span style="color:#c8c8c8;">は個人開発アプリの開発</span><br>
+            <span style="color:#c8c8c8;">サイクルを回すための Skills 一式...</span>
+          </div>
+          <div class="vsc-terminal-panel">
+            <div class="vsc-panel-tabs">
+              <div class="vsc-panel-tab active">ターミナル</div>
+              <div class="vsc-panel-tab">出力</div>
+              <div class="vsc-panel-tab">問題</div>
+            </div>
+            <div class="vsc-panel-body">
+              <span class="blk" style="color:#4ec9b0;font-family:monospace;font-size:12px;"><span class="ps1">PS </span><span class="path">C:\Users\user\my-app</span><span class="ps1">&gt;</span> <span class="cmd">claude</span></span>
+              <span class="blk" style="color:#9cdcfe;font-family:monospace;font-size:12px;">✓ Claude Code v1.x.x が起動しました</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>VS Code を起動する</h4>
+          <p>スタートメニューで「Visual Studio Code」と検索して起動します。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>日本語化する（任意）</h4>
+          <p>左サイドバーの拡張機能アイコン（🧩）をクリックし、<code>Japanese Language Pack</code> を検索してインストール。再起動後に日本語化されます。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>ターミナルを開く</h4>
+          <p><code>Ctrl + `</code>（バッククォート）でターミナルが開きます。ここから <code>claude</code> コマンドを実行します。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Step 4: GitHub ── -->
+  <section id="step-github">
+    <h2><span class="num">5</span> Step 4 　GitHub をセットアップする</h2>
+
+    <h3>GitHub アカウントを作成する</h3>
+    <p><a href="https://github.com" style="color:var(--accent-2);">github.com</a> でアカウントを作成します。すでにある場合はスキップしてください。</p>
+
+    <h3>gh コマンドでログインする</h3>
+    <div class="codeblock"><pre><code>gh auth login</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+
+    <p>対話式の選択肢が表示されます。矢印キーで選んで Enter を押します。</p>
+
+    <!-- Terminal: gh auth login interactive -->
+    <div class="term-window">
+      <div class="term-bar">
+        <span class="term-btn tc"></span><span class="term-btn tm"></span><span class="term-btn tx"></span>
+        <span class="term-title">Windows PowerShell — gh auth login</span>
+      </div>
+      <div class="term-body">
+        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">gh</span> <span class="arg">auth login</span></span>
+        <span class="gap"></span>
+        <span class="blk out">? What account do you want to log into?</span>
+        <span class="blk yn">&gt; GitHub.com</span>
+        <span class="blk dim">  GitHub Enterprise Server</span>
+        <span class="gap"></span>
+        <span class="blk out">? What is your preferred protocol for Git operations on this host?</span>
+        <span class="blk yn">&gt; HTTPS</span>
+        <span class="blk dim">  SSH</span>
+        <span class="gap"></span>
+        <span class="blk out">? How would you like to authenticate GitHub CLI?</span>
+        <span class="blk dim">  Paste an authentication token</span>
+        <span class="blk yn">&gt; Login with a web browser</span>
+        <span class="gap"></span>
+        <span class="blk out">! First copy your one-time code: <span class="hl">A1B2-C3D4</span></span>
+        <span class="blk out">Press Enter to open github.com in your browser...</span>
+      </div>
+    </div>
+
+    <p>ブラウザが開きます。表示された 8 桁のコードを入力して GitHub にログインします。</p>
+
+    <!-- Browser mockup: GitHub device auth -->
+    <div class="browser-window">
+      <div class="browser-bar">
+        <div class="browser-btns">
+          <span class="bb-c"></span><span class="bb-m"></span><span class="bb-x"></span>
+        </div>
+        <div class="browser-url">github.com/login/device</div>
+      </div>
+      <div class="browser-body">
+        <span class="gh-logo">🐙</span>
+        <div class="gh-h2">デバイスのアクティベーション</div>
+        <div class="gh-sub">GitHub CLI があなたのアカウントにアクセスする権限を求めています。<br>ターミナルに表示されたコードを入力して認証してください。</div>
+        <div class="gh-code-box">
+          <div class="gh-code-label">ワンタイムコード</div>
+          <div class="gh-code">A1B2-C3D4</div>
+        </div>
+        <div class="gh-btn">✓ 続行</div>
+      </div>
+    </div>
+
+    <p>認証が完了するとターミナルに戻ります。</p>
+
+    <div class="term-window">
+      <div class="term-bar">
+        <span class="term-btn tc"></span><span class="term-btn tm"></span><span class="term-btn tx"></span>
+        <span class="term-title">Windows PowerShell — gh auth 完了</span>
+      </div>
+      <div class="term-body">
+        <span class="blk ok">✓ Authentication complete.</span>
+        <span class="blk ok">✓ Logged in as toshiki1995</span>
+        <span class="gap"></span>
+        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cursor"></span></span>
+      </div>
+    </div>
+
+    <h3>Git のユーザー情報を設定する</h3>
+    <div class="codeblock"><pre><code>git config --global user.name "あなたの名前"
+git config --global user.email "your@email.com"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  </section>
+
+  <!-- ── Step 5: Claude Code ── -->
+  <section id="step-claude">
+    <h2><span class="num">6</span> Step 5 　Claude Code をインストールする</h2>
+
+    <div class="callout callout-warn">
+      <span class="callout-icon">⚠️</span>
+      <p><strong>Claude Pro または Max のサブスクリプションが必要です。</strong><a href="https://claude.ai" style="color:var(--accent-2);">claude.ai</a> でプランに加入してからインストールしてください。</p>
+    </div>
+
+    <div class="codeblock"><pre><code>npm install -g @anthropic-ai/claude-code</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+
+    <h3>起動と初回ログイン</h3>
+    <p>VS Code のターミナル（<code>Ctrl + `</code>）で実行します。</p>
+
+    <div class="codeblock"><pre><code>claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+
+    <!-- Terminal: claude startup -->
+    <div class="term-window">
+      <div class="term-bar">
+        <span class="term-btn tc"></span><span class="term-btn tm"></span><span class="term-btn tx"></span>
+        <span class="term-title">VS Code — ターミナル（Claude Code 起動）</span>
+      </div>
+      <div class="term-body">
+        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user\my-app</span><span class="ps1">&gt;</span> <span class="cmd">claude</span></span>
+        <span class="gap"></span>
+        <span class="blk" style="color:#c4b5fd;font-weight:700;">  ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗</span>
+        <span class="blk" style="color:#c4b5fd;font-weight:700;">  ██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝</span>
+        <span class="blk" style="color:#c4b5fd;font-weight:700;">  ██║     ██║     ███████║██║   ██║██║  ██║█████╗</span>
+        <span class="gap"></span>
+        <span class="blk ok">✓ Claude Code v1.x.x</span>
+        <span class="blk out">ブラウザが開きます。claude.ai でログインしてください…</span>
+        <span class="blk ok">✓ ログイン完了</span>
+        <span class="gap"></span>
+        <span class="blk" style="color:#e2e8f0;">╭─────────────────────────────────────────╮</span>
+        <span class="blk" style="color:#e2e8f0;">│ ✻ Welcome to Claude Code!               │</span>
+        <span class="blk" style="color:#e2e8f0;">│   何でも話しかけてください              │</span>
+        <span class="blk" style="color:#e2e8f0;">╰─────────────────────────────────────────╯</span>
+        <span class="gap"></span>
+        <span class="blk" style="color:#94a3b8;">? </span><span class="cursor"></span>
+      </div>
+    </div>
+
+    <div class="callout callout-tip">
+      <span class="callout-icon">✅</span>
+      <p><strong>VS Code のターミナルから起動するのがおすすめです。</strong><code>Ctrl + `</code> でターミナルを開き、<code>claude</code> と入力するだけで起動できます。</p>
+    </div>
+  </section>
+
+  <!-- ── Step 6: Codex ── -->
+  <section id="step-codex">
+    <h2><span class="num">7</span> Step 6 　Codex CLI をインストールする</h2>
+    <p>このスターターキットでは実装（コーディング）を <strong>Codex CLI</strong> に委任します。ChatGPT アカウントで認証するので API キーは不要です。</p>
+
+    <div class="codeblock"><pre><code>npm install -g @openai/codex</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+
+    <div class="codeblock"><pre><code>codex login</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+
+    <p>ブラウザが開くので ChatGPT（OpenAI）アカウントでログインします。</p>
+
+    <div class="codeblock"><pre><code>codex login status</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+
+    <div class="term-window">
+      <div class="term-bar">
+        <span class="term-btn tc"></span><span class="term-btn tm"></span><span class="term-btn tx"></span>
+        <span class="term-title">Windows PowerShell — codex login status</span>
+      </div>
+      <div class="term-body">
+        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">codex</span> <span class="arg">login status</span></span>
+        <span class="blk ok">Logged in using ChatGPT</span>
+        <span class="gap"></span>
+        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cursor"></span></span>
+      </div>
+    </div>
+
+    <p><code>Logged in using ChatGPT</code> と表示されれば OK です。</p>
+
+    <div class="callout callout-warn">
+      <span class="callout-icon">⚠️</span>
+      <p><strong>「Failed to create session」エラーが出た場合：</strong>PowerShell（管理者）で以下を実行してから再試行してください。</p>
+    </div>
+    <div class="codeblock"><pre><code>icacls "$env:USERPROFILE\.codex" /grant "$env:USERNAME:(OI)(CI)F"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  </section>
+
+  <!-- ── Step 7: MCP ── -->
+  <section id="step-mcp">
+    <h2><span class="num">8</span> Step 7 　MCP サーバーを登録する</h2>
+    <p>
+      <strong>MCP（Model Context Protocol）</strong>は Claude Code が外部ツールと連携するための仕組みです。
+      Codex MCP サーバーをマシンに一度だけ登録すると、
+      このテンプレートから作ったすべてのプロジェクトで自動的に使えるようになります。
+    </p>
+
+    <div class="codeblock"><pre><code>claude mcp add codex -s user -- codex mcp-server</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+
+    <h3>登録確認</h3>
+    <div class="codeblock"><pre><code>claude mcp list</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+
+    <!-- MCP list mockup -->
+    <div class="mcp-list">
+      <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span style="color:#dcdcaa;">claude</span> <span style="color:#9cdcfe;">mcp list</span></span>
+      <span class="gap"></span>
+      <span class="blk">
+        <span class="mcp-connected">✔</span>
+        <span class="mcp-name"> codex</span>
+        <span class="mcp-detail"> — Connected (codex mcp-server)</span>
+      </span>
+      <span class="gap"></span>
+      <span class="blk dim">1 server connected</span>
+    </div>
+
+    <p><code>codex</code> が <strong>✔ Connected</strong> になっていれば OK です。</p>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <p><code>Connected</code> にならない場合は Claude Code を再起動してください。登録直後はセッションに読み込まれていないことがあります。</p>
+    </div>
+  </section>
+
+  <!-- ── Step 8: Playwright ── -->
+  <section id="step-playwright">
+    <h2><span class="num">9</span> Step 8 　Playwright をセットアップする（任意）</h2>
+    <p><strong>app-release-promo スキル</strong>でリリース告知バナー画像を生成する場合のみ必要です。告知素材を使わない場合はスキップしてください。</p>
+
+    <div class="codeblock"><pre><code><span class="cm"># スキルのディレクトリへ移動</span>
+cd .claude\skills\app-release-promo
+
+<span class="cm"># 仮想環境を作成</span>
+python -m venv .venv
+
+<span class="cm"># Playwright をインストール</span>
+.venv\Scripts\pip install playwright
+
+<span class="cm"># Chromium ブラウザをインストール</span>
+.venv\Scripts\python -m playwright install chromium
+
+<span class="cm"># プロジェクトルートに戻る</span>
+cd ..\..\..
+</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+  </section>
+
+  <!-- ── Workflow ── -->
+  <section id="workflow">
+    <h2><span class="num">10</span> 全体の開発フロー</h2>
+    <p>このスターターキットは 5 つのフェーズで開発を進めます。Claude Code と Codex の役割分担がポイントです。</p>
+
+    <div class="flow">
+      <div class="flow-item">
+        <div class="flow-conn"><div class="flow-dot"></div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-phase">Phase 1</div>
+          <h4>要件定義</h4>
+          <p>機能の目的・受け入れ基準を整理し <code>docs/dev-workflow/&lt;機能名&gt;/requirements.md</code> に保存。</p>
+          <span class="who who-cc">Claude Code</span>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-conn"><div class="flow-dot"></div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-phase">Phase 2</div>
+          <h4>設計</h4>
+          <p>アーキテクチャ・API 設計・Codex への実装指示を含む設計書を作成。</p>
+          <span class="who who-cc">Claude Code</span>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-conn"><div class="flow-dot"></div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-phase">Phase 3</div>
+          <h4>実装（Codex に委任）</h4>
+          <p>設計書の実装指示を Codex に渡してコードを書かせる。差し戻しも同じスレッドで継続。</p>
+          <span class="who who-cx">Codex</span>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-conn"><div class="flow-dot"></div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-phase">Phase 4</div>
+          <h4>評価</h4>
+          <p>受け入れ基準の突き合わせ・コードレビュー・セキュリティチェック。不合格なら Phase 3 へ差し戻し。</p>
+          <span class="who who-cc">Claude Code</span>
+        </div>
+      </div>
+      <div class="flow-item">
+        <div class="flow-conn"><div class="flow-dot"></div><div class="flow-line"></div></div>
+        <div class="flow-body">
+          <div class="flow-phase">Phase 5</div>
+          <h4>リリース準備</h4>
+          <p>CHANGELOG・PR 説明の下書き。SNS 告知素材が必要なら app-release-promo スキルへ委譲。</p>
+          <span class="who who-cc">Claude Code</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Skills ── -->
+  <section id="skills">
+    <h2><span class="num">11</span> 含まれるスキル</h2>
+
+    <div class="skill-card">
+      <div class="skill-head">
+        <div class="skill-icon si-p">🔄</div>
+        <div>
+          <h3>dev-workflow</h3>
+          <p class="skill-trigger"><strong>トリガー：</strong>「〇〇機能を実装したい」「この要件で開発を進めて」などで自動起動</p>
+        </div>
+      </div>
+      <ul>
+        <li>要件定義→設計→Codex 委任→評価→リリース準備を一気通貫で管理</li>
+        <li>各フェーズで成果物を <code>docs/dev-workflow/</code> に自動保存</li>
+        <li>評価で不合格なら自動的に差し戻しループを実行</li>
+        <li>セキュリティレビュー（OWASP Top 10 視点）を標準搭載</li>
+      </ul>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-head">
+        <div class="skill-icon si-c">📢</div>
+        <div>
+          <h3>app-release-promo</h3>
+          <p class="skill-trigger"><strong>トリガー：</strong>「リリース告知素材作って」「SNS 投稿文作って」などで自動起動</p>
+        </div>
+      </div>
+      <ul>
+        <li>Instagram / Threads 向け投稿文を複数案生成</li>
+        <li>アプリアイコン＋キャッチコピーの告知バナー画像（PNG）を生成</li>
+        <li>Codex CLI 経由で AI コンセプト画像を生成（オプション）</li>
+        <li>生成物は <code>release-assets/&lt;アプリ名&gt;/&lt;日付&gt;/</code> に保存</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ── Usage ── -->
+  <section id="usage">
+    <h2><span class="num">12</span> 実際の使い方</h2>
+
+    <h3>新規プロジェクトを作成する</h3>
+    <p>GitHub でこのリポジトリの <strong>「Use this template」</strong> ボタンから新しいリポジトリを作成します。</p>
+
+    <div class="codeblock"><pre><code>gh repo create my-app --template toshimaru-dev/phoneapp-dev-harness --clone
+cd my-app
+npm install</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+
+    <h3>Claude Code を起動して話しかける</h3>
+
+    <!-- Claude Code chat mockup -->
+    <div class="claude-window">
+      <div class="claude-header">
+        <div class="claude-logo">✻</div>
+        <div>
+          <div class="claude-header-text">Claude Code</div>
+          <div class="claude-header-sub">my-app — dev-workflow スキル</div>
+        </div>
+      </div>
+      <div class="claude-body">
+        <div class="claude-msg user">
+          <div class="claude-bubble bubble-user">
+            ログイン機能を実装したい。メールアドレスとパスワードで認証して JWT を返す API を作ってほしい。
+          </div>
+          <div class="claude-avatar av-user">👤</div>
+        </div>
+        <div class="claude-msg">
+          <div class="claude-avatar av-claude">✻</div>
+          <div class="claude-bubble bubble-claude">
+            <div class="phase-tag">🔄 Phase 1 — 要件定義</div>
+            承知しました。要件を整理します。<br><br>
+            <strong>機能名：</strong> ログイン API<br>
+            <strong>目的：</strong> メール・パスワードで認証し JWT を発行する<br><br>
+            受け入れ基準を確認させてください：<br>
+            ① 正しい認証情報で 200 + JWT を返す<br>
+            ② 誤ったパスワードで 401 を返す<br>
+            ③ トークンの有効期限は 24 時間<br><br>
+            この内容で合っていますか？
+          </div>
+        </div>
+        <div class="claude-msg user">
+          <div class="claude-bubble bubble-user">合っています。進めてください。</div>
+          <div class="claude-avatar av-user">👤</div>
+        </div>
+        <div class="claude-msg">
+          <div class="claude-avatar av-claude">✻</div>
+          <div class="claude-bubble bubble-claude">
+            <div class="phase-tag">🔄 Phase 2 — 設計</div>
+            <div class="claude-thinking"><span></span><span></span><span></span></div>
+            設計書を作成しています…
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-tip">
+      <span class="callout-icon">✅</span>
+      <p>フェーズごとに Claude Code が確認を求めます。<strong>要件の認識違いをフェーズ初期に潰せる</strong>ので手戻りが大幅に減ります。</p>
+    </div>
+  </section>
+
+  <!-- ── Tips ── -->
+  <section id="tips">
+    <h2><span class="num">13</span> Tips &amp; ベストプラクティス</h2>
+    <table class="data-table">
+      <thead><tr><th>場面</th><th>ポイント</th></tr></thead>
+      <tbody>
+        <tr><td>要件定義</td><td>受け入れ基準は「〇〇した時に△△になる」の形で書くほど、評価フェーズがスムーズになる</td></tr>
+        <tr><td>差し戻し</td><td>Codex への修正指示は必ず同じ threadId で送る。新しいセッションを立てると文脈が失われる</td></tr>
+        <tr><td>ループが収束しない</td><td>評価→差し戻しが 3 回を超えたら設計書の粒度を疑う。「設計を見直して」と Claude Code に伝える</td></tr>
+        <tr><td>CLAUDE.md の活用</td><td>触ってほしくないファイルや使ってはいけないパッケージがあれば CLAUDE.md に明記する</td></tr>
+        <tr><td>VS Code との併用</td><td>Claude Code のターミナルと VS Code を並べておくとコードの確認・手動編集がしやすい</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- ── Trouble ── -->
+  <section id="trouble">
+    <h2><span class="num">14</span> トラブルシューティング</h2>
+    <table class="data-table">
+      <thead><tr><th style="width:44%">症状</th><th>対処</th></tr></thead>
+      <tbody>
+        <tr><td><code>winget</code> が認識されない</td><td>Microsoft Store で「アプリ インストーラー」を更新するか Windows Update を実行</td></tr>
+        <tr><td><code>node</code> / <code>git</code> / <code>gh</code> が認識されない</td><td>インストール後に PowerShell を開き直していない。<strong>閉じて再起動</strong>してから再確認</td></tr>
+        <tr><td><code>claude</code> が認識されない</td><td><code>npm install -g @anthropic-ai/claude-code</code> を再実行してターミナルを再起動</td></tr>
+        <tr><td><code>mcp__codex__codex</code> が見当たらない</td><td><code>claude mcp add codex -s user -- codex mcp-server</code> を実行後に Claude Code を再起動</td></tr>
+        <tr><td><code>codex: command not found</code></td><td><code>npm install -g @openai/codex</code> を実行</td></tr>
+        <tr><td>Codex ログインで権限エラー</td><td>PowerShell（管理者）で <code>icacls "$env:USERPROFILE\.codex" /grant "$env:USERNAME:(OI)(CI)F"</code></td></tr>
+        <tr><td><code>gh auth login</code> でブラウザが開かない</td><td><code>gh auth login --web</code> を試す</td></tr>
+        <tr><td>Playwright で <code>ModuleNotFoundError</code></td><td><code>.venv\Scripts\python</code> 経由で実行しているか確認。グローバルの <code>python</code> は使わない</td></tr>
+        <tr><td>Codex が指示と違う実装をした</td><td>新しいセッションを立てず、<code>mcp__codex__codex-reply</code> で同じ <code>threadId</code> に修正指示を送る</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>
+    <p>Built with <strong>Claude Code</strong> — Anthropic の AI 開発支援ツール</p>
+    <p style="margin-top:5px;"><a href="https://docs.anthropic.com/claude-code" style="color:var(--accent-2);text-decoration:none;">docs.anthropic.com/claude-code</a></p>
+  </footer>
+
+</main>
+
+<script>
+  function copyCode(btn) {
+    const code = btn.closest('.codeblock').querySelector('code').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+      btn.textContent = 'Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  const sections = document.querySelectorAll('section[id]');
+  const links = document.querySelectorAll('#sidebar nav a');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const a = document.querySelector(`#sidebar nav a[href="#${e.target.id}"]`);
+        if (a) a.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-15% 0px -75% 0px' });
+  sections.forEach(s => obs.observe(s));
+</script>
+</body>
+</html>

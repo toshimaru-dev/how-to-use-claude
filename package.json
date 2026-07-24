@@ -1,0 +1,26 @@
+{
+  "name": "how-to-use-claude",
+  "version": "1.0.0",
+  "description": "Claude Code を使ってスマホ・ウェブアプリ開発を始めるためのスターターキット",
+  "private": true,
+  "scripts": {
+    "setup:codex": "npm install -g @openai/codex",
+    "setup:mcp": "claude mcp add codex -s user -- codex mcp-server",
+    "setup:playwright": "cd .claude/skills/app-release-promo && python -m venv .venv && .venv/Scripts/pip install playwright && .venv/Scripts/python -m playwright install chromium && cd ../../..",
+    "check": "claude mcp list",
+    "docs": "start docs/index.html"
+  },
+  "devDependencies": {
+    "@openai/codex": "latest"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "claude-code",
+    "ai-development",
+    "codex",
+    "mcp",
+    "app-development"
+  ]
+}
