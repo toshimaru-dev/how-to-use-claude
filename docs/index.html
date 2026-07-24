@@ -455,8 +455,8 @@
 
   <!-- ── Step 2: Repo ── -->
   <section id="step-repo">
-    <h2><span class="num">3</span> Step 2　テンプレートからリポジトリを作成する</h2>
-    <p>GitHub でこのリポジトリの <strong>「Use this template」</strong> ボタンから新しいリポジトリを作成し、クローンします。</p>
+    <h2><span class="num">3</span> Step 2　リポジトリをダウンロードしてフォルダを開く</h2>
+    <p>GitHub からリポジトリを ZIP でダウンロードして、ローカルに展開します。</p>
 
     <div class="browser-window">
       <div class="browser-bar">
@@ -469,20 +469,40 @@
         <span class="gh-logo">🐙</span>
         <div class="gh-h2">toshimaru-dev / how-to-use-claude</div>
         <div class="gh-sub">Claude Code × Codex CLI スターターキット</div>
-        <div class="gh-btn">Use this template　▾</div>
-        <div style="margin-top:8px;font-size:12px;color:#666;">→ Create a new repository</div>
+        <div class="gh-btn">Code　▾</div>
+        <div style="margin-top:8px;font-size:12px;color:#666;">→ Download ZIP</div>
       </div>
     </div>
 
-    <p>または <code>gh</code> コマンドでクローンします（<code>gh auth login</code> が済んでいる場合）。</p>
-
-    <span class="cb-label">PowerShell</span>
-    <div class="codeblock"><pre><code>gh repo create my-app --template toshimaru-dev/how-to-use-claude --clone
-cd my-app</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>ZIP をダウンロードして展開する</h4>
+          <p>ページ右上の <strong>「Code」→「Download ZIP」</strong> からダウンロードし、任意のフォルダに展開します。</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>PowerShell でそのフォルダに移動する</h4>
+          <p>展開したフォルダのパスに移動します（例：<code>Documents\how-to-use-claude</code> に展開した場合）。</p>
+          <div class="codeblock"><pre><code>cd "$env:USERPROFILE\Documents\how-to-use-claude"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Claude Code を起動する</h4>
+          <p>そのフォルダで <code>claude</code> を実行すれば準備完了です。</p>
+          <div class="codeblock"><pre><code>claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        </div>
+      </div>
+    </div>
 
     <div class="callout callout-info">
       <span class="callout-icon">ℹ️</span>
-      <p><code>gh</code> コマンドが使えない場合でも大丈夫です。次のステップで <code>setup</code> スキルが GitHub CLI のインストールも案内します。</p>
+      <p>Git がまだ入っていなくても問題ありません。次のステップで <code>setup</code> スキルがインストールを案内します。</p>
     </div>
   </section>
 
@@ -495,8 +515,7 @@ cd my-app</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</bu
     </p>
 
     <span class="cb-label">PowerShell</span>
-    <div class="codeblock"><pre><code>cd my-app
-claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <div class="codeblock"><pre><code>claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
 
     <!-- Claude Code chat mockup: setup skill -->
     <div class="claude-window">
