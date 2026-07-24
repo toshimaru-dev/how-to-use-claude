@@ -116,7 +116,8 @@ $mcpOk = $false
 $mcpDetail = "NOT REGISTERED"
 $claudeConfigPaths = @(
     (Join-Path $env:APPDATA "Claude\settings.json"),
-    (Join-Path $env:USERPROFILE ".claude\settings.json")
+    (Join-Path $env:USERPROFILE ".claude\settings.json"),
+    (Join-Path $env:USERPROFILE ".claude.json")
 )
 foreach ($cfgPath in $claudeConfigPaths) {
     if (Test-Path $cfgPath) {

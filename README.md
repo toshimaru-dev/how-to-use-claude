@@ -5,9 +5,8 @@ Claude Code と Codex CLI を組み合わせた、個人開発アプリの開発
 
 ## ドキュメント
 
-**[📄 セットアップガイド (docs/index.html)](docs/index.html)**
+**[📄 セットアップガイド](https://toshimaru-dev.github.io/how-to-use-claude/)**
 — ツールのインストールから開発ワークフローの使い方まで、すべて HTML ガイドで解説。
-ブラウザで開いてください。
 
 ## 前提となる環境
 
@@ -19,7 +18,7 @@ Claude Code と Codex CLI を組み合わせた、個人開発アプリの開発
 
 ## クイックスタート（概要）
 
-詳細手順は **[docs/index.html](docs/index.html)** を参照してください。
+詳細手順は **[セットアップガイド](https://toshimaru-dev.github.io/how-to-use-claude/)** を参照してください。
 
 ### 1. 開発ツールを一括インストール（PowerShell 管理者で実行）
 
@@ -79,6 +78,11 @@ claude
 
 ```
 .claude/skills/
+├── setup/                  # 初回セットアップ（ツールインストール・Codex 連携）
+│   ├── SKILL.md
+│   └── scripts/
+├── setup-check/            # セットアップ状態の確認・レポート
+│   └── SKILL.md
 ├── dev-workflow/           # 要件定義→設計→実装委任→評価→リリース準備
 │   ├── SKILL.md
 │   └── templates/
@@ -87,13 +91,12 @@ claude
     ├── templates/
     └── scripts/
 docs/
-├── index.html              # Windows 向けセットアップ・使い方ガイド
-└── skill-spec.md           # スキル設計仕様書（設計背景）
+└── index.html              # Windows 向けセットアップ・使い方ガイド（GitHub Pages で公開）
 ```
 
 ## トラブルシューティング
 
-`docs/index.html` の「トラブルシューティング」セクションを参照してください。
+**[セットアップガイド](https://toshimaru-dev.github.io/how-to-use-claude/)** の「トラブルシューティング」セクションも参照してください。
 
 | よくある症状 | 対処 |
 |---|---|
