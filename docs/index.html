@@ -155,16 +155,16 @@
     .tc { background: #ff5f57; } .tm { background: #ffbd2e; } .tx { background: #28ca41; }
     .term-title { flex: 1; text-align: center; font-size: 11.5px; color: #666; font-family: 'Segoe UI', sans-serif; }
     .term-body { padding: 16px 18px; font-family: 'Cascadia Code', 'Fira Code', Consolas, monospace; font-size: 12.5px; line-height: 1.7; }
-    .ps1  { color: #5c9cf5; } /* PS prompt */
-    .path { color: #4ec9b0; } /* path */
-    .cmd  { color: #dcdcaa; } /* command */
-    .arg  { color: #9cdcfe; } /* argument */
-    .out  { color: #c8c8c8; } /* output text */
-    .ok   { color: #6a9955; } /* success green */
-    .err  { color: #f48771; } /* error red */
-    .dim  { color: #555; }    /* faded */
-    .hl   { color: #b5cea8; } /* number highlight */
-    .yn   { color: #c586c0; } /* prompt choice */
+    .ps1  { color: #5c9cf5; }
+    .path { color: #4ec9b0; }
+    .cmd  { color: #dcdcaa; }
+    .arg  { color: #9cdcfe; }
+    .out  { color: #c8c8c8; }
+    .ok   { color: #6a9955; }
+    .err  { color: #f48771; }
+    .dim  { color: #555; }
+    .hl   { color: #b5cea8; }
+    .yn   { color: #c586c0; }
     .blk  { display: block; }
     .term-body .gap { display: block; height: 6px; }
     .cursor { display: inline-block; width: 8px; height: 14px; background: #c8c8c8; vertical-align: text-bottom; animation: blink 1s step-end infinite; }
@@ -288,6 +288,7 @@
     .skill-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 12px; }
     .skill-icon { width: 40px; height: 40px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 19px; flex-shrink: 0; }
     .si-p { background: var(--badge-bg); } .si-c { background: rgba(6,182,212,.12); }
+    .si-g { background: rgba(16,185,129,.12); }
     .skill-card h3 { margin: 0 0 3px; font-size: 14.5px; }
     .skill-trigger { font-size: 11.5px; color: var(--text-muted); margin-bottom: 0 !important; }
     .skill-card ul { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 6px; }
@@ -328,17 +329,13 @@
   <nav>
     <div class="nav-group">はじめに</div>
     <a href="#overview">このガイドについて</a>
-    <a href="#tools">必要なツール一覧</a>
+    <a href="#accounts">必要なアカウント</a>
 
-    <div class="nav-group">環境構築</div>
-    <a href="#step-winget">Step 1　winget を確認</a>
-    <a href="#step-tools">Step 2　開発ツール一括インストール</a>
-    <a href="#step-vscode">Step 3　VS Code のセットアップ</a>
-    <a href="#step-github">Step 4　GitHub のセットアップ</a>
-    <a href="#step-claude">Step 5　Claude Code のインストール</a>
-    <a href="#step-codex">Step 6　Codex CLI のセットアップ</a>
-    <a href="#step-mcp">Step 7　MCP サーバー登録</a>
-    <a href="#step-playwright">Step 8　Playwright（任意）</a>
+    <div class="nav-group">セットアップ（3 ステップ）</div>
+    <a href="#step-install">Step 1　Node.js + Claude Code</a>
+    <a href="#step-repo">Step 2　リポジトリ作成</a>
+    <a href="#step-setup">Step 3　setup スキルで一括設定</a>
+    <a href="#step-check">確認　setup-check スキル</a>
 
     <div class="nav-group">開発ワークフロー</div>
     <a href="#workflow">全体フロー</a>
@@ -357,7 +354,7 @@
   <div class="hero">
     <div class="eyebrow">Windows Starter Guide</div>
     <h1>Claude Code で<br>スマホ・ウェブアプリ開発を<br>ゼロから始める</h1>
-    <p>開発環境が何も入っていない Windows PC からスタート。順番どおりに進めるだけでセットアップ完了。</p>
+    <p>「セットアップして」と話しかけるだけ。Claude Code のスキルが環境構築をすべて案内します。</p>
     <div class="badges">
       <span class="badge badge-orange">Windows 10 / 11</span>
       <span class="badge badge-purple">Claude Code</span>
@@ -375,478 +372,263 @@
       スマホ・ウェブアプリ開発の <strong>Windows 向けスターターキット</strong> です。
     </p>
     <p>
-      <strong>Node.js・Git・VS Code・GitHub CLI も未インストールの状態</strong>から、
-      すべての手順をこのガイドでカバーします。
+      セットアップは <strong>3 ステップ</strong>。Claude Code を起動してから先は、
+      スキルが対話形式で必要なツールのインストールと設定を案内します。
+      コマンドを一つひとつ調べる必要はありません。
     </p>
 
     <div class="callout callout-tip">
       <span class="callout-icon">✅</span>
       <p>
-        <strong>PowerShell（管理者）</strong>を使って進めます。
+        管理者権限が必要な操作のみ <strong>PowerShell（管理者）</strong> で実行するよう案内されます。
         スタートメニューで「PowerShell」と検索し、右クリック →「管理者として実行」で開いてください。
       </p>
     </div>
+  </section>
 
-    <!-- Terminal mockup: PowerShell starting -->
-    <div class="term-window">
-      <div class="term-bar">
-        <span class="term-btn tc"></span><span class="term-btn tm"></span><span class="term-btn tx"></span>
-        <span class="term-title">Windows PowerShell（管理者）</span>
+  <!-- ── 1. Accounts ── -->
+  <section id="accounts">
+    <h2><span class="num">1</span> 必要なアカウント</h2>
+    <p>事前に以下の 3 つのアカウントを用意してください。ツールのインストールはスキルが案内します。</p>
+    <div class="tool-grid">
+      <div class="tool-card">
+        <div class="tool-name">Claude <span class="req">必須</span></div>
+        <p>Pro または Max プラン。<br>claude.ai でサブスクリプション登録</p>
       </div>
-      <div class="term-body">
-        <span class="blk dim">Windows PowerShell</span>
-        <span class="blk dim">Copyright (C) Microsoft Corporation. All rights reserved.</span>
-        <span class="gap"></span>
-        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cursor"></span></span>
+      <div class="tool-card">
+        <div class="tool-name">ChatGPT <span class="req">必須</span></div>
+        <p>Codex CLI の認証に使用。<br>無料アカウントで OK</p>
       </div>
+      <div class="tool-card">
+        <div class="tool-name">GitHub <span class="req">必須</span></div>
+        <p>コード管理・テンプレート利用。<br>無料アカウントで OK</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Step 1: Node.js + Claude Code ── -->
+  <section id="step-install">
+    <h2><span class="num">2</span> Step 1　Node.js と Claude Code をインストールする</h2>
+    <p>
+      Claude Code を動かすには <strong>Node.js</strong> が必要です。
+      これだけ手動でインストールします。残りのツールはスキルが案内します。
+    </p>
+
+    <h3>Node.js をインストールする</h3>
+    <p>PowerShell（管理者）で以下を実行します。</p>
+
+    <span class="cb-label">PowerShell（管理者）</span>
+    <div class="codeblock"><pre><code>winget install -e --id OpenJS.NodeJS.LTS</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+
+    <div class="callout callout-warn">
+      <span class="callout-icon">⚠️</span>
+      <p><strong>インストール後は PowerShell を閉じて開き直してください。</strong>新しくインストールしたコマンドは再起動しないと認識されません。</p>
     </div>
 
     <div class="callout callout-info">
       <span class="callout-icon">ℹ️</span>
-      <p>コマンド内の <span style="color:#4b5580;font-family:monospace;"># コメント</span> で始まる行は説明文です。まとめてコピーしても動作に影響はありません。</p>
+      <p><code>winget</code> が使えない場合は <a href="https://nodejs.org/" style="color:var(--accent-2);">nodejs.org</a> からインストーラーをダウンロードしてください。</p>
     </div>
-  </section>
 
-  <!-- ── 1. Tools ── -->
-  <section id="tools">
-    <h2><span class="num">1</span> 必要なツール一覧</h2>
-    <p>この手順でインストールするツールとアカウントの全体像です。</p>
-    <div class="tool-grid">
-      <div class="tool-card"><div class="tool-name">Node.js <span class="req">必須</span></div><p>Claude Code・Codex CLI の実行環境</p></div>
-      <div class="tool-card"><div class="tool-name">Git <span class="req">必須</span></div><p>バージョン管理ツール</p></div>
-      <div class="tool-card"><div class="tool-name">VS Code <span class="req">必須</span></div><p>コードエディタ</p></div>
-      <div class="tool-card"><div class="tool-name">GitHub CLI <span class="req">必須</span></div><p><code>gh</code> コマンド。GitHub 操作に使用</p></div>
-      <div class="tool-card"><div class="tool-name">Python <span class="opt">任意</span></div><p>バナー画像生成のみ使用</p></div>
-      <div class="tool-card"><div class="tool-name">Claude アカウント <span class="req">必須</span></div><p>Pro / Max プラン（claude.ai）</p></div>
-      <div class="tool-card"><div class="tool-name">ChatGPT アカウント <span class="req">必須</span></div><p>Codex CLI 認証用。無料 OK</p></div>
-      <div class="tool-card"><div class="tool-name">GitHub アカウント <span class="req">必須</span></div><p>コード管理・テンプレート作成</p></div>
-    </div>
-  </section>
-
-  <!-- ── Step 1: winget ── -->
-  <section id="step-winget">
-    <h2><span class="num">2</span> Step 1 　winget を確認する</h2>
-    <p>
-      Windows には <strong>winget</strong>（Windows Package Manager）という標準ツールがあり、
-      コマンド一発でアプリをインストールできます。まず使えるか確認します。
-    </p>
+    <h3>Claude Code をインストールする</h3>
+    <p>PowerShell（管理者）で以下を実行します。</p>
 
     <span class="cb-label">PowerShell（管理者）</span>
-    <div class="codeblock"><pre><code>winget --version</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <div class="codeblock"><pre><code>npm install -g @anthropic-ai/claude-code</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
 
-    <p>実行するとこのような結果が返ります。</p>
-
-    <!-- Terminal: winget --version result -->
     <div class="term-window">
       <div class="term-bar">
         <span class="term-btn tc"></span><span class="term-btn tm"></span><span class="term-btn tx"></span>
         <span class="term-title">Windows PowerShell（管理者）</span>
       </div>
       <div class="term-body">
-        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">winget</span> <span class="arg">--version</span></span>
-        <span class="blk ok">v1.8.1911</span>
+        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">npm</span> <span class="arg">install -g @anthropic-ai/claude-code</span></span>
+        <span class="blk out">added 142 packages in 18s</span>
+        <span class="gap"></span>
+        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">claude</span> <span class="arg">--version</span></span>
+        <span class="blk ok">1.x.x</span>
         <span class="gap"></span>
         <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cursor"></span></span>
       </div>
     </div>
-
-    <p>バージョン番号（<code>v1.x.xxxx</code>）が表示されれば OK です。</p>
-
-    <div class="callout callout-warn">
-      <span class="callout-icon">⚠️</span>
-      <p><strong>「コマンドが見つからない」と表示された場合</strong>：Microsoft Store で「アプリ インストーラー」を検索して更新するか、Windows Update を実行してから再試行してください。</p>
-    </div>
   </section>
 
-  <!-- ── Step 2: Tools install ── -->
-  <section id="step-tools">
-    <h2><span class="num">3</span> Step 2 　開発ツールを一括インストールする</h2>
-    <p>以下のコマンドをまとめてコピー＆ペーストして実行します。インストール済みのものは自動的にスキップされます。</p>
+  <!-- ── Step 2: Repo ── -->
+  <section id="step-repo">
+    <h2><span class="num">3</span> Step 2　テンプレートからリポジトリを作成する</h2>
+    <p>GitHub でこのリポジトリの <strong>「Use this template」</strong> ボタンから新しいリポジトリを作成し、クローンします。</p>
 
-    <span class="cb-label">PowerShell（管理者）</span>
-    <div class="codeblock"><pre><code><span class="cm"># Node.js LTS</span>
-winget install -e --id OpenJS.NodeJS.LTS
-
-<span class="cm"># Git</span>
-winget install -e --id Git.Git
-
-<span class="cm"># GitHub CLI（gh コマンド）</span>
-winget install -e --id GitHub.cli
-
-<span class="cm"># VS Code</span>
-winget install -e --id Microsoft.VisualStudioCode
-
-<span class="cm"># Python（バナー生成が不要なら省略可）</span>
-winget install -e --id Python.Python.3.12</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-
-    <!-- Terminal: winget install progress -->
-    <div class="term-window">
-      <div class="term-bar">
-        <span class="term-btn tc"></span><span class="term-btn tm"></span><span class="term-btn tx"></span>
-        <span class="term-title">Windows PowerShell（管理者）— winget 実行中</span>
-      </div>
-      <div class="term-body">
-        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">winget</span> <span class="arg">install -e --id OpenJS.NodeJS.LTS</span></span>
-        <span class="blk out">見つかりました Node.js LTS [OpenJS.NodeJS.LTS] バージョン 20.18.1</span>
-        <span class="blk out">このアプリケーションのライセンスはそのソース条項に従い付与されます。</span>
-        <span class="blk out">ダウンロード中 https://nodejs.org/dist/v20.18.1/node-v20.18.1-x64.msi</span>
-        <span class="blk"><span class="ok">  ████████████████████</span> <span class="hl">100%</span></span>
-        <span class="blk ok">インストールが完了しました。</span>
-        <span class="gap"></span>
-        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">winget</span> <span class="arg">install -e --id Git.Git</span></span>
-        <span class="blk out">見つかりました Git [Git.Git] バージョン 2.47.1</span>
-        <span class="blk"><span class="ok">  ████████████████████</span> <span class="hl">100%</span></span>
-        <span class="blk ok">インストールが完了しました。</span>
-      </div>
-    </div>
-
-    <div class="callout callout-warn">
-      <span class="callout-icon">⚠️</span>
-      <p><strong>インストール後は必ず PowerShell を閉じて開き直してください。</strong>新しくインストールしたコマンドは、再起動しないと認識されません。</p>
-    </div>
-
-    <h3>インストール確認</h3>
-    <p>PowerShell を開き直してから以下を実行します。</p>
-
-    <div class="codeblock"><pre><code>node --version
-npm --version
-git --version
-gh --version
-code --version</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-
-    <!-- Terminal: version check -->
-    <div class="term-window">
-      <div class="term-bar">
-        <span class="term-btn tc"></span><span class="term-btn tm"></span><span class="term-btn tx"></span>
-        <span class="term-title">Windows PowerShell（管理者）— バージョン確認</span>
-      </div>
-      <div class="term-body">
-        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">node</span> <span class="arg">--version</span></span>
-        <span class="blk ok">v20.18.1</span>
-        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">npm</span> <span class="arg">--version</span></span>
-        <span class="blk ok">10.8.2</span>
-        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">git</span> <span class="arg">--version</span></span>
-        <span class="blk ok">git version 2.47.1.windows.1</span>
-        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">gh</span> <span class="arg">--version</span></span>
-        <span class="blk ok">gh version 2.62.0 (2024-11-14)</span>
-        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">code</span> <span class="arg">--version</span></span>
-        <span class="blk ok">1.95.3</span>
-      </div>
-    </div>
-
-    <p>すべてにバージョン番号が表示されれば OK です。</p>
-  </section>
-
-  <!-- ── Step 3: VS Code ── -->
-  <section id="step-vscode">
-    <h2><span class="num">4</span> Step 3 　VS Code をセットアップする</h2>
-    <p>VS Code はコードを読み書きするメインのエディタです。ターミナルも内蔵しているので、Claude Code もここから起動します。</p>
-
-    <!-- VS Code window mockup -->
-    <div class="vsc-window">
-      <div class="vsc-titlebar">
-        <div class="vsc-title-btns">
-          <span style="background:#ff5f57"></span>
-          <span style="background:#ffbd2e"></span>
-          <span style="background:#28ca41"></span>
-        </div>
-        <span class="vsc-title">Visual Studio Code</span>
-      </div>
-      <div class="vsc-tabs">
-        <div class="vsc-tab active">CLAUDE.md</div>
-        <div class="vsc-tab">README.md</div>
-        <div class="vsc-tab">package.json</div>
-      </div>
-      <div class="vsc-body">
-        <div class="vsc-activity">
-          <div class="vsc-icon active-icon">📁</div>
-          <div class="vsc-icon">🔍</div>
-          <div class="vsc-icon">🧩</div>
-          <div class="vsc-icon">🐙</div>
-        </div>
-        <div class="vsc-sidebar">
-          <div class="vsc-tree-title">エクスプローラー</div>
-          <div class="vsc-tree-item"><span class="vsc-tree-folder">▾</span> MY-APP</div>
-          <div class="vsc-tree-item" style="padding-left:28px"><span class="vsc-tree-folder">▾</span> .claude</div>
-          <div class="vsc-tree-item" style="padding-left:40px"><span class="vsc-tree-folder">▸</span> skills</div>
-          <div class="vsc-tree-item" style="padding-left:28px"><span class="vsc-tree-folder">▾</span> docs</div>
-          <div class="vsc-tree-item selected" style="padding-left:40px"><span class="vsc-tree-file md">📄</span> index.html</div>
-          <div class="vsc-tree-item" style="padding-left:28px"><span class="vsc-tree-file md">📄</span> CLAUDE.md</div>
-          <div class="vsc-tree-item" style="padding-left:28px"><span class="vsc-tree-file md">📄</span> README.md</div>
-          <div class="vsc-tree-item" style="padding-left:28px"><span class="vsc-tree-file ts">📄</span> package.json</div>
-        </div>
-        <div class="vsc-main">
-          <div class="vsc-editor" style="color:#c8c8c8;font-size:12px;">
-            <span style="color:#608b4e;"># CLAUDE.md</span><br>
-            <span style="color:#c8c8c8;"></span><br>
-            <span style="color:#608b4e;">## このリポジトリについて</span><br>
-            <span style="color:#9cdcfe;">phoneapp-dev-harness</span> <span style="color:#c8c8c8;">は個人開発アプリの開発</span><br>
-            <span style="color:#c8c8c8;">サイクルを回すための Skills 一式...</span>
-          </div>
-          <div class="vsc-terminal-panel">
-            <div class="vsc-panel-tabs">
-              <div class="vsc-panel-tab active">ターミナル</div>
-              <div class="vsc-panel-tab">出力</div>
-              <div class="vsc-panel-tab">問題</div>
-            </div>
-            <div class="vsc-panel-body">
-              <span class="blk" style="color:#4ec9b0;font-family:monospace;font-size:12px;"><span class="ps1">PS </span><span class="path">C:\Users\user\my-app</span><span class="ps1">&gt;</span> <span class="cmd">claude</span></span>
-              <span class="blk" style="color:#9cdcfe;font-family:monospace;font-size:12px;">✓ Claude Code v1.x.x が起動しました</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">1</div>
-        <div class="step-body">
-          <h4>VS Code を起動する</h4>
-          <p>スタートメニューで「Visual Studio Code」と検索して起動します。</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">2</div>
-        <div class="step-body">
-          <h4>日本語化する（任意）</h4>
-          <p>左サイドバーの拡張機能アイコン（🧩）をクリックし、<code>Japanese Language Pack</code> を検索してインストール。再起動後に日本語化されます。</p>
-        </div>
-      </div>
-      <div class="step">
-        <div class="step-num">3</div>
-        <div class="step-body">
-          <h4>ターミナルを開く</h4>
-          <p><code>Ctrl + `</code>（バッククォート）でターミナルが開きます。ここから <code>claude</code> コマンドを実行します。</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── Step 4: GitHub ── -->
-  <section id="step-github">
-    <h2><span class="num">5</span> Step 4 　GitHub をセットアップする</h2>
-
-    <h3>GitHub アカウントを作成する</h3>
-    <p><a href="https://github.com" style="color:var(--accent-2);">github.com</a> でアカウントを作成します。すでにある場合はスキップしてください。</p>
-
-    <h3>gh コマンドでログインする</h3>
-    <div class="codeblock"><pre><code>gh auth login</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-
-    <p>対話式の選択肢が表示されます。矢印キーで選んで Enter を押します。</p>
-
-    <!-- Terminal: gh auth login interactive -->
-    <div class="term-window">
-      <div class="term-bar">
-        <span class="term-btn tc"></span><span class="term-btn tm"></span><span class="term-btn tx"></span>
-        <span class="term-title">Windows PowerShell — gh auth login</span>
-      </div>
-      <div class="term-body">
-        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">gh</span> <span class="arg">auth login</span></span>
-        <span class="gap"></span>
-        <span class="blk out">? What account do you want to log into?</span>
-        <span class="blk yn">&gt; GitHub.com</span>
-        <span class="blk dim">  GitHub Enterprise Server</span>
-        <span class="gap"></span>
-        <span class="blk out">? What is your preferred protocol for Git operations on this host?</span>
-        <span class="blk yn">&gt; HTTPS</span>
-        <span class="blk dim">  SSH</span>
-        <span class="gap"></span>
-        <span class="blk out">? How would you like to authenticate GitHub CLI?</span>
-        <span class="blk dim">  Paste an authentication token</span>
-        <span class="blk yn">&gt; Login with a web browser</span>
-        <span class="gap"></span>
-        <span class="blk out">! First copy your one-time code: <span class="hl">A1B2-C3D4</span></span>
-        <span class="blk out">Press Enter to open github.com in your browser...</span>
-      </div>
-    </div>
-
-    <p>ブラウザが開きます。表示された 8 桁のコードを入力して GitHub にログインします。</p>
-
-    <!-- Browser mockup: GitHub device auth -->
     <div class="browser-window">
       <div class="browser-bar">
         <div class="browser-btns">
           <span class="bb-c"></span><span class="bb-m"></span><span class="bb-x"></span>
         </div>
-        <div class="browser-url">github.com/login/device</div>
+        <div class="browser-url">github.com/toshimaru-dev/how-to-use-claude</div>
       </div>
       <div class="browser-body">
         <span class="gh-logo">🐙</span>
-        <div class="gh-h2">デバイスのアクティベーション</div>
-        <div class="gh-sub">GitHub CLI があなたのアカウントにアクセスする権限を求めています。<br>ターミナルに表示されたコードを入力して認証してください。</div>
-        <div class="gh-code-box">
-          <div class="gh-code-label">ワンタイムコード</div>
-          <div class="gh-code">A1B2-C3D4</div>
-        </div>
-        <div class="gh-btn">✓ 続行</div>
+        <div class="gh-h2">toshimaru-dev / how-to-use-claude</div>
+        <div class="gh-sub">Claude Code × Codex CLI スターターキット</div>
+        <div class="gh-btn">Use this template　▾</div>
+        <div style="margin-top:8px;font-size:12px;color:#666;">→ Create a new repository</div>
       </div>
     </div>
 
-    <p>認証が完了するとターミナルに戻ります。</p>
+    <p>または <code>gh</code> コマンドでクローンします（<code>gh auth login</code> が済んでいる場合）。</p>
 
-    <div class="term-window">
-      <div class="term-bar">
-        <span class="term-btn tc"></span><span class="term-btn tm"></span><span class="term-btn tx"></span>
-        <span class="term-title">Windows PowerShell — gh auth 完了</span>
-      </div>
-      <div class="term-body">
-        <span class="blk ok">✓ Authentication complete.</span>
-        <span class="blk ok">✓ Logged in as toshiki1995</span>
-        <span class="gap"></span>
-        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cursor"></span></span>
-      </div>
+    <span class="cb-label">PowerShell</span>
+    <div class="codeblock"><pre><code>gh repo create my-app --template toshimaru-dev/how-to-use-claude --clone
+cd my-app</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">ℹ️</span>
+      <p><code>gh</code> コマンドが使えない場合でも大丈夫です。次のステップで <code>setup</code> スキルが GitHub CLI のインストールも案内します。</p>
     </div>
-
-    <h3>Git のユーザー情報を設定する</h3>
-    <div class="codeblock"><pre><code>git config --global user.name "あなたの名前"
-git config --global user.email "your@email.com"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
   </section>
 
-  <!-- ── Step 5: Claude Code ── -->
-  <section id="step-claude">
-    <h2><span class="num">6</span> Step 5 　Claude Code をインストールする</h2>
+  <!-- ── Step 3: setup skill ── -->
+  <section id="step-setup">
+    <h2><span class="num">4</span> Step 3　Claude Code を起動して「セットアップして」と伝える</h2>
+    <p>
+      リポジトリのフォルダで <code>claude</code> を起動し、「<strong>セットアップして</strong>」と話しかけます。
+      <code>setup</code> スキルが起動し、環境チェックから設定完了まで対話形式で案内します。
+    </p>
 
-    <div class="callout callout-warn">
-      <span class="callout-icon">⚠️</span>
-      <p><strong>Claude Pro または Max のサブスクリプションが必要です。</strong><a href="https://claude.ai" style="color:var(--accent-2);">claude.ai</a> でプランに加入してからインストールしてください。</p>
-    </div>
+    <span class="cb-label">PowerShell</span>
+    <div class="codeblock"><pre><code>cd my-app
+claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
 
-    <div class="codeblock"><pre><code>npm install -g @anthropic-ai/claude-code</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-
-    <h3>起動と初回ログイン</h3>
-    <p>VS Code のターミナル（<code>Ctrl + `</code>）で実行します。</p>
-
-    <div class="codeblock"><pre><code>claude</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-
-    <!-- Terminal: claude startup -->
-    <div class="term-window">
-      <div class="term-bar">
-        <span class="term-btn tc"></span><span class="term-btn tm"></span><span class="term-btn tx"></span>
-        <span class="term-title">VS Code — ターミナル（Claude Code 起動）</span>
+    <!-- Claude Code chat mockup: setup skill -->
+    <div class="claude-window">
+      <div class="claude-header">
+        <div class="claude-logo">✻</div>
+        <div>
+          <div class="claude-header-text">Claude Code</div>
+          <div class="claude-header-sub">my-app — setup スキル</div>
+        </div>
       </div>
-      <div class="term-body">
-        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user\my-app</span><span class="ps1">&gt;</span> <span class="cmd">claude</span></span>
-        <span class="gap"></span>
-        <span class="blk" style="color:#c4b5fd;font-weight:700;">  ██████╗██╗      █████╗ ██╗   ██╗██████╗ ███████╗</span>
-        <span class="blk" style="color:#c4b5fd;font-weight:700;">  ██╔════╝██║     ██╔══██╗██║   ██║██╔══██╗██╔════╝</span>
-        <span class="blk" style="color:#c4b5fd;font-weight:700;">  ██║     ██║     ███████║██║   ██║██║  ██║█████╗</span>
-        <span class="gap"></span>
-        <span class="blk ok">✓ Claude Code v1.x.x</span>
-        <span class="blk out">ブラウザが開きます。claude.ai でログインしてください…</span>
-        <span class="blk ok">✓ ログイン完了</span>
-        <span class="gap"></span>
-        <span class="blk" style="color:#e2e8f0;">╭─────────────────────────────────────────╮</span>
-        <span class="blk" style="color:#e2e8f0;">│ ✻ Welcome to Claude Code!               │</span>
-        <span class="blk" style="color:#e2e8f0;">│   何でも話しかけてください              │</span>
-        <span class="blk" style="color:#e2e8f0;">╰─────────────────────────────────────────╯</span>
-        <span class="gap"></span>
-        <span class="blk" style="color:#94a3b8;">? </span><span class="cursor"></span>
+      <div class="claude-body">
+        <div class="claude-msg user">
+          <div class="claude-bubble bubble-user">セットアップして</div>
+          <div class="claude-avatar av-user">👤</div>
+        </div>
+        <div class="claude-msg">
+          <div class="claude-avatar av-claude">✻</div>
+          <div class="claude-bubble bubble-claude">
+            <div class="phase-tag">⚙️ setup スキル</div>
+            環境チェックスクリプトを実行しています…<br><br>
+            <strong>チェック結果：</strong><br>
+            ✅ Node.js — OK<br>
+            ✅ Claude Code — OK<br>
+            ❌ Git — 未インストール<br>
+            ❌ GitHub CLI — 未インストール<br>
+            ❌ VS Code — 未インストール<br>
+            ❌ Codex CLI — 未インストール<br>
+            ❌ Codex ログイン — 未完了<br>
+            ❌ MCP codex 登録 — 未登録<br><br>
+            <strong>PowerShell（管理者）</strong>で以下を実行してください。<br>
+            終わったら「続けて」と入力してください。
+          </div>
+        </div>
+        <div class="claude-msg user">
+          <div class="claude-bubble bubble-user">続けて</div>
+          <div class="claude-avatar av-user">👤</div>
+        </div>
+        <div class="claude-msg">
+          <div class="claude-avatar av-claude">✻</div>
+          <div class="claude-bubble bubble-claude">
+            Codex CLI をインストールしています…<br>
+            <span style="color:#6a9955;">✅ 完了</span><br><br>
+            次に <code>codex login</code> をターミナルで実行し、<br>
+            ブラウザで ChatGPT にログインしてください。<br>
+            完了したら「続けて」と入力してください。
+          </div>
+        </div>
+        <div class="claude-msg user">
+          <div class="claude-bubble bubble-user">続けて</div>
+          <div class="claude-avatar av-user">👤</div>
+        </div>
+        <div class="claude-msg">
+          <div class="claude-avatar av-claude">✻</div>
+          <div class="claude-bubble bubble-claude">
+            MCP サーバー（codex）を登録しています…<br>
+            <span style="color:#6a9955;">✅ 完了</span><br><br>
+            <strong>セットアップが完了しました！</strong><br>
+            MCP の反映には Claude Code の再起動が必要です。<br>
+            いったん終了し、<code>claude</code> を再実行してください。
+          </div>
+        </div>
       </div>
     </div>
 
     <div class="callout callout-tip">
       <span class="callout-icon">✅</span>
-      <p><strong>VS Code のターミナルから起動するのがおすすめです。</strong><code>Ctrl + `</code> でターミナルを開き、<code>claude</code> と入力するだけで起動できます。</p>
+      <p><strong>スキルが案内するコマンドだけ実行すれば OK です。</strong>管理者権限が必要な箇所は「PowerShell（管理者）で実行してください」と明示されます。</p>
     </div>
+
+    <h3>setup スキルが対応する内容</h3>
+    <table class="data-table">
+      <thead><tr><th>対応内容</th><th>手動 / 自動</th></tr></thead>
+      <tbody>
+        <tr><td>Git・GitHub CLI・VS Code のインストール</td><td>スキルが winget コマンドを提示 → ユーザーが管理者 PowerShell で実行</td></tr>
+        <tr><td>Codex CLI のインストール</td><td>スキルが自動実行（<code>npm install -g @openai/codex</code>）</td></tr>
+        <tr><td>Codex ログイン</td><td>スキルが案内 → ユーザーが <code>codex login</code> を実行（ブラウザ認証）</td></tr>
+        <tr><td>MCP サーバー（codex）登録</td><td>スキルが自動実行（<code>claude mcp add codex -s user -- codex mcp-server</code>）</td></tr>
+      </tbody>
+    </table>
   </section>
 
-  <!-- ── Step 6: Codex ── -->
-  <section id="step-codex">
-    <h2><span class="num">7</span> Step 6 　Codex CLI をインストールする</h2>
-    <p>このスターターキットでは実装（コーディング）を <strong>Codex CLI</strong> に委任します。ChatGPT アカウントで認証するので API キーは不要です。</p>
-
-    <div class="codeblock"><pre><code>npm install -g @openai/codex</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-
-    <div class="codeblock"><pre><code>codex login</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-
-    <p>ブラウザが開くので ChatGPT（OpenAI）アカウントでログインします。</p>
-
-    <div class="codeblock"><pre><code>codex login status</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-
-    <div class="term-window">
-      <div class="term-bar">
-        <span class="term-btn tc"></span><span class="term-btn tm"></span><span class="term-btn tx"></span>
-        <span class="term-title">Windows PowerShell — codex login status</span>
-      </div>
-      <div class="term-body">
-        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cmd">codex</span> <span class="arg">login status</span></span>
-        <span class="blk ok">Logged in using ChatGPT</span>
-        <span class="gap"></span>
-        <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span class="cursor"></span></span>
-      </div>
-    </div>
-
-    <p><code>Logged in using ChatGPT</code> と表示されれば OK です。</p>
-
-    <div class="callout callout-warn">
-      <span class="callout-icon">⚠️</span>
-      <p><strong>「Failed to create session」エラーが出た場合：</strong>PowerShell（管理者）で以下を実行してから再試行してください。</p>
-    </div>
-    <div class="codeblock"><pre><code>icacls "$env:USERPROFILE\.codex" /grant "$env:USERNAME:(OI)(CI)F"</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-  </section>
-
-  <!-- ── Step 7: MCP ── -->
-  <section id="step-mcp">
-    <h2><span class="num">8</span> Step 7 　MCP サーバーを登録する</h2>
+  <!-- ── Step 4: setup-check ── -->
+  <section id="step-check">
+    <h2><span class="num">5</span> 確認　setup-check スキルで状態を確認する</h2>
     <p>
-      <strong>MCP（Model Context Protocol）</strong>は Claude Code が外部ツールと連携するための仕組みです。
-      Codex MCP サーバーをマシンに一度だけ登録すると、
-      このテンプレートから作ったすべてのプロジェクトで自動的に使えるようになります。
+      セットアップが完了しているか不安なときは「<strong>セットアップ確認して</strong>」と話しかけます。
+      <code>setup-check</code> スキルが各ツールの状態を一覧レポートします。
     </p>
 
-    <div class="codeblock"><pre><code>claude mcp add codex -s user -- codex mcp-server</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-
-    <h3>登録確認</h3>
-    <div class="codeblock"><pre><code>claude mcp list</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
-
-    <!-- MCP list mockup -->
-    <div class="mcp-list">
-      <span class="blk"><span class="ps1">PS </span><span class="path">C:\Users\user</span><span class="ps1">&gt;</span> <span style="color:#dcdcaa;">claude</span> <span style="color:#9cdcfe;">mcp list</span></span>
-      <span class="gap"></span>
-      <span class="blk">
-        <span class="mcp-connected">✔</span>
-        <span class="mcp-name"> codex</span>
-        <span class="mcp-detail"> — Connected (codex mcp-server)</span>
-      </span>
-      <span class="gap"></span>
-      <span class="blk dim">1 server connected</span>
+    <!-- Claude Code chat mockup: setup-check -->
+    <div class="claude-window">
+      <div class="claude-header">
+        <div class="claude-logo">✻</div>
+        <div>
+          <div class="claude-header-text">Claude Code</div>
+          <div class="claude-header-sub">my-app — setup-check スキル</div>
+        </div>
+      </div>
+      <div class="claude-body">
+        <div class="claude-msg user">
+          <div class="claude-bubble bubble-user">セットアップ確認して</div>
+          <div class="claude-avatar av-user">👤</div>
+        </div>
+        <div class="claude-msg">
+          <div class="claude-avatar av-claude">✻</div>
+          <div class="claude-bubble bubble-claude">
+            <div class="phase-tag">🔍 setup-check スキル</div>
+            <strong>開発環境チェック結果</strong><br><br>
+            ✅ Node.js v20.18.1<br>
+            ✅ Git 2.47.1<br>
+            ✅ GitHub CLI 2.62.0<br>
+            ✅ VS Code 1.95.3<br>
+            ✅ Claude Code 1.x.x<br>
+            ✅ Codex CLI 1.x.x<br>
+            ✅ Codex ログイン済み<br>
+            ✅ MCP codex 登録済み<br><br>
+            <span style="color:#6ee7b7;font-weight:700;">開発環境はすべて整っています。いつでも開発を始められます。</span>
+          </div>
+        </div>
+      </div>
     </div>
-
-    <p><code>codex</code> が <strong>✔ Connected</strong> になっていれば OK です。</p>
 
     <div class="callout callout-info">
       <span class="callout-icon">ℹ️</span>
-      <p><code>Connected</code> にならない場合は Claude Code を再起動してください。登録直後はセッションに読み込まれていないことがあります。</p>
+      <p>❌ の項目がある場合、「セットアップして」と伝えると <code>setup</code> スキルが不足分だけを補完します。</p>
     </div>
-  </section>
-
-  <!-- ── Step 8: Playwright ── -->
-  <section id="step-playwright">
-    <h2><span class="num">9</span> Step 8 　Playwright をセットアップする（任意）</h2>
-    <p><strong>app-release-promo スキル</strong>でリリース告知バナー画像を生成する場合のみ必要です。告知素材を使わない場合はスキップしてください。</p>
-
-    <div class="codeblock"><pre><code><span class="cm"># スキルのディレクトリへ移動</span>
-cd .claude\skills\app-release-promo
-
-<span class="cm"># 仮想環境を作成</span>
-python -m venv .venv
-
-<span class="cm"># Playwright をインストール</span>
-.venv\Scripts\pip install playwright
-
-<span class="cm"># Chromium ブラウザをインストール</span>
-.venv\Scripts\python -m playwright install chromium
-
-<span class="cm"># プロジェクトルートに戻る</span>
-cd ..\..\..
-</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
   </section>
 
   <!-- ── Workflow ── -->
   <section id="workflow">
-    <h2><span class="num">10</span> 全体の開発フロー</h2>
-    <p>このスターターキットは 5 つのフェーズで開発を進めます。Claude Code と Codex の役割分担がポイントです。</p>
+    <h2><span class="num">6</span> 全体の開発フロー</h2>
+    <p>セットアップ完了後は、Claude Code に話しかけるだけで開発が進みます。</p>
 
     <div class="flow">
       <div class="flow-item">
@@ -899,14 +681,46 @@ cd ..\..\..
 
   <!-- ── Skills ── -->
   <section id="skills">
-    <h2><span class="num">11</span> 含まれるスキル</h2>
+    <h2><span class="num">7</span> スキル一覧</h2>
+    <p>Claude Code に話しかけるだけでスキルが自動起動します。</p>
+
+    <div class="skill-card">
+      <div class="skill-head">
+        <div class="skill-icon si-g">⚙️</div>
+        <div>
+          <h3>setup</h3>
+          <p class="skill-trigger"><strong>トリガー：</strong>「セットアップして」「環境構築して」「ツールをインストールして」</p>
+        </div>
+      </div>
+      <ul>
+        <li>チェックスクリプトで現状を確認し、不足ツールのみ補完</li>
+        <li>Git・GitHub CLI・VS Code は winget コマンドを提示して案内</li>
+        <li>Codex CLI のインストールと MCP 登録は自動実行</li>
+        <li>すべて完了したら再確認スクリプトで OK を確認</li>
+      </ul>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-head">
+        <div class="skill-icon si-g">🔍</div>
+        <div>
+          <h3>setup-check</h3>
+          <p class="skill-trigger"><strong>トリガー：</strong>「セットアップ確認して」「環境チェック」「何が足りないか教えて」</p>
+        </div>
+      </div>
+      <ul>
+        <li>Node.js・Git・GitHub CLI・VS Code・Claude Code・Codex CLI を一括確認</li>
+        <li>Codex ログイン状態・MCP codex 登録状況もチェック</li>
+        <li>❌ がある場合は setup スキルへの誘導を提案</li>
+      </ul>
+    </div>
 
     <div class="skill-card">
       <div class="skill-head">
         <div class="skill-icon si-p">🔄</div>
         <div>
           <h3>dev-workflow</h3>
-          <p class="skill-trigger"><strong>トリガー：</strong>「〇〇機能を実装したい」「この要件で開発を進めて」などで自動起動</p>
+          <p class="skill-trigger"><strong>トリガー：</strong>「〇〇機能を実装したい」「要件定義して」「この機能を作って」</p>
         </div>
       </div>
       <ul>
@@ -922,7 +736,7 @@ cd ..\..\..
         <div class="skill-icon si-c">📢</div>
         <div>
           <h3>app-release-promo</h3>
-          <p class="skill-trigger"><strong>トリガー：</strong>「リリース告知素材作って」「SNS 投稿文作って」などで自動起動</p>
+          <p class="skill-trigger"><strong>トリガー：</strong>「リリース告知素材作って」「SNS 投稿文作って」</p>
         </div>
       </div>
       <ul>
@@ -936,18 +750,12 @@ cd ..\..\..
 
   <!-- ── Usage ── -->
   <section id="usage">
-    <h2><span class="num">12</span> 実際の使い方</h2>
-
-    <h3>新規プロジェクトを作成する</h3>
-    <p>GitHub でこのリポジトリの <strong>「Use this template」</strong> ボタンから新しいリポジトリを作成します。</p>
-
-    <div class="codeblock"><pre><code>gh repo create my-app --template toshimaru-dev/phoneapp-dev-harness --clone
-cd my-app
-npm install</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <h2><span class="num">8</span> 実際の使い方</h2>
 
     <h3>Claude Code を起動して話しかける</h3>
+    <p>プロジェクトのフォルダで <code>claude</code> を起動し、やりたいことを日本語で伝えるだけです。</p>
 
-    <!-- Claude Code chat mockup -->
+    <!-- Claude Code chat mockup: dev-workflow -->
     <div class="claude-window">
       <div class="claude-header">
         <div class="claude-logo">✻</div>
@@ -1000,7 +808,7 @@ npm install</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</
 
   <!-- ── Tips ── -->
   <section id="tips">
-    <h2><span class="num">13</span> Tips &amp; ベストプラクティス</h2>
+    <h2><span class="num">9</span> Tips &amp; ベストプラクティス</h2>
     <table class="data-table">
       <thead><tr><th>場面</th><th>ポイント</th></tr></thead>
       <tbody>
@@ -1015,18 +823,16 @@ npm install</code></pre><button class="copy-btn" onclick="copyCode(this)">Copy</
 
   <!-- ── Trouble ── -->
   <section id="trouble">
-    <h2><span class="num">14</span> トラブルシューティング</h2>
+    <h2><span class="num">10</span> トラブルシューティング</h2>
     <table class="data-table">
       <thead><tr><th style="width:44%">症状</th><th>対処</th></tr></thead>
       <tbody>
         <tr><td><code>winget</code> が認識されない</td><td>Microsoft Store で「アプリ インストーラー」を更新するか Windows Update を実行</td></tr>
-        <tr><td><code>node</code> / <code>git</code> / <code>gh</code> が認識されない</td><td>インストール後に PowerShell を開き直していない。<strong>閉じて再起動</strong>してから再確認</td></tr>
-        <tr><td><code>claude</code> が認識されない</td><td><code>npm install -g @anthropic-ai/claude-code</code> を再実行してターミナルを再起動</td></tr>
-        <tr><td><code>mcp__codex__codex</code> が見当たらない</td><td><code>claude mcp add codex -s user -- codex mcp-server</code> を実行後に Claude Code を再起動</td></tr>
-        <tr><td><code>codex: command not found</code></td><td><code>npm install -g @openai/codex</code> を実行</td></tr>
+        <tr><td><code>node</code> / <code>claude</code> が認識されない</td><td>インストール後に PowerShell を開き直していない。<strong>閉じて再起動</strong>してから再確認</td></tr>
+        <tr><td><code>mcp__codex__codex</code> が見当たらない</td><td>Claude Code を再起動する。それでも出ない場合は「セットアップして」と話しかける</td></tr>
+        <tr><td><code>codex: command not found</code></td><td>「セットアップして」と話しかけると <code>setup</code> スキルが自動インストールを実行</td></tr>
         <tr><td>Codex ログインで権限エラー</td><td>PowerShell（管理者）で <code>icacls "$env:USERPROFILE\.codex" /grant "$env:USERNAME:(OI)(CI)F"</code></td></tr>
-        <tr><td><code>gh auth login</code> でブラウザが開かない</td><td><code>gh auth login --web</code> を試す</td></tr>
-        <tr><td>Playwright で <code>ModuleNotFoundError</code></td><td><code>.venv\Scripts\python</code> 経由で実行しているか確認。グローバルの <code>python</code> は使わない</td></tr>
+        <tr><td>環境が壊れた・よくわからなくなった</td><td>「セットアップ確認して」で現状把握 → 問題箇所を「セットアップして」で再設定</td></tr>
         <tr><td>Codex が指示と違う実装をした</td><td>新しいセッションを立てず、<code>mcp__codex__codex-reply</code> で同じ <code>threadId</code> に修正指示を送る</td></tr>
       </tbody>
     </table>
