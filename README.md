@@ -1,78 +1,76 @@
 # Claude Code でスマホ・ウェブアプリ開発を始める
 
 Claude Code と Codex CLI を組み合わせた、個人開発アプリの開発ワークフロー **スターターキット**。
-**Windows PC の開発未経験環境** からセットアップできるよう設計されています。
+要件定義・設計・評価は Claude Code が担い、実装（コーディング）は Codex に委任する役割分担で動きます。
 
-## ドキュメント
+## はじめかた（初回セットアップ）
 
-**[📄 セットアップガイド](https://toshimaru-dev.github.io/how-to-use-claude/)**
-— ツールのインストールから開発ワークフローの使い方まで、すべて HTML ガイドで解説。
+### 1. Claude Code をインストール
 
-## 前提となる環境
-
-| 前提 | 内容 |
-|---|---|
-| OS | Windows 10 / 11 |
-| 開発環境 | **未セットアップでも OK**（Node.js・Git・VS Code 含め手順内でインストール） |
-| アカウント | Claude Pro または Max、ChatGPT、GitHub アカウントが必要 |
-
-## クイックスタート（概要）
-
-詳細手順は **[セットアップガイド](https://toshimaru-dev.github.io/how-to-use-claude/)** を参照してください。
-
-### 1. 開発ツールを一括インストール（PowerShell 管理者で実行）
-
-```powershell
-winget install -e --id OpenJS.NodeJS.LTS
-winget install -e --id Git.Git
-winget install -e --id GitHub.cli
-winget install -e --id Microsoft.VisualStudioCode
-```
-
-### 2. Claude Code をインストール
+Node.js がない場合は先に [nodejs.org](https://nodejs.org/) からインストールしてください。
 
 ```powershell
 npm install -g @anthropic-ai/claude-code
 ```
 
-### 3. Codex CLI をインストール・ログイン
+### 2. このテンプレートからリポジトリを作成・クローン
+
+GitHub の **「Use this template」** ボタンから新規リポジトリを作成し、クローンします。
 
 ```powershell
-npm install -g @openai/codex
-codex login
-```
-
-### 4. MCP サーバーを登録（マシンごとに一度だけ）
-
-```powershell
-claude mcp add codex -s user -- codex mcp-server
-claude mcp list   # codex が "✔ Connected" になっていれば OK
-```
-
-### 5. このテンプレートから新規プロジェクトを作成
-
-```powershell
-gh auth login   # 初回のみ
-gh repo create my-app --template toshimaru-dev/phoneapp-dev-harness --clone
+gh repo create my-app --template toshimaru-dev/how-to-use-claude --clone
 cd my-app
-npm install
 ```
 
-### 6. Claude Code を起動
+### 3. Claude Code を起動して「セットアップして」と伝える
 
 ```powershell
 claude
 ```
 
+起動したら以下のように入力してください。
+
+> **セットアップして**
+
+`setup` スキルが起動し、Git・GitHub CLI・VS Code・Codex CLI のインストールから
+Codex ログイン・MCP サーバー登録まで、ステップごとに案内します。
+
+---
+
+セットアップ完了後は、Claude Code を再起動すれば開発を始められます。
+
+> **セットアップ確認して**
+
+と伝えると `setup-check` スキルが各ツールの状態をまとめてレポートします。
+
+## スキル一覧
+
+Claude Code に話しかけるだけで各スキルが起動します。
+
+| スキル | 起動する言葉の例 | 内容 |
+|---|---|---|
+| `setup` | 「セットアップして」「環境構築して」 | 開発ツール一式のインストールと設定を案内 |
+| `setup-check` | 「セットアップ確認して」「環境チェック」 | 各ツールの状態をレポート |
+| `dev-workflow` | 「〇〇機能を作りたい」「要件定義して」 | 要件定義→設計→実装委任→評価→リリース準備を一気通貫で進行 |
+| `app-release-promo` | 「リリース告知素材を作って」 | SNS 投稿文・バナー・コンセプト画像を生成 |
+
 ## 役割分担
 
-| フェーズ | 担当 | 手段 |
+| フェーズ | 担当 | スキル |
 |---|---|---|
-| 要件定義・設計 | Claude Code | dev-workflow スキル |
-| 実装（コーディング） | Codex | `mcp__codex__codex`（MCP 経由） |
-| 評価・コードレビュー | Claude Code | dev-workflow スキル |
-| リリース準備 | Claude Code | dev-workflow スキル |
-| SNS 告知素材生成 | Codex | app-release-promo スキル経由 |
+| 要件定義・設計 | Claude Code | dev-workflow |
+| 実装（コーディング） | Codex（MCP 経由） | dev-workflow |
+| 評価・コードレビュー | Claude Code | dev-workflow |
+| リリース準備 | Claude Code | dev-workflow |
+| SNS 告知素材生成 | Codex | app-release-promo |
+
+## 前提となるアカウント
+
+| サービス | 用途 |
+|---|---|
+| Claude Pro / Max | Claude Code の利用 |
+| ChatGPT（OpenAI） | Codex CLI の利用 |
+| GitHub | リポジトリ管理・テンプレート利用 |
 
 ## リポジトリ構成
 
@@ -91,15 +89,15 @@ claude
     ├── templates/
     └── scripts/
 docs/
-└── index.html              # Windows 向けセットアップ・使い方ガイド（GitHub Pages で公開）
+└── index.html              # セットアップ・使い方ガイド（GitHub Pages で公開）
 ```
+
+詳細は **[セットアップガイド](https://toshimaru-dev.github.io/how-to-use-claude/)** も参照してください。
 
 ## トラブルシューティング
 
-**[セットアップガイド](https://toshimaru-dev.github.io/how-to-use-claude/)** の「トラブルシューティング」セクションも参照してください。
-
 | よくある症状 | 対処 |
 |---|---|
-| コマンドが認識されない | PowerShell を閉じて開き直す |
+| `claude` コマンドが認識されない | PowerShell を閉じて開き直す |
 | `mcp__codex__codex` が見当たらない | `claude mcp add codex -s user -- codex mcp-server` 後に Claude Code 再起動 |
 | Codex ログインで権限エラー | PowerShell（管理者）で `icacls "$env:USERPROFILE\.codex" /grant "$env:USERNAME:(OI)(CI)F"` |
